@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Stage, Layer, Rect, Text } from 'react-konva';
+import Board from '../Board';
+import MiniMap from '../MiniMap';
 
 function generateShapes() {
   return [...Array(10)].map((_, i) => ({
@@ -13,7 +14,7 @@ function generateShapes() {
 
 const INITIAL_STATE = generateShapes();
 
-const Board = () => {
+const Screen: React.FC = () => {
   const [stars, setStars] = useState(INITIAL_STATE);
   const [board, setBoard] = useState({
     stageScale: 1,
@@ -54,13 +55,11 @@ const Board = () => {
       x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
       y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
     };
-    if (e.evt.deltaY > 0) {
-      console.log('zoom out', oldScale * scaleBy);
-    } else {
-      console.log('zoom In', oldScale * scaleBy);
-    }
 
-    const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+    const newScale =
+      e.evt.deltaY > 0
+        ? Math.min(oldScale * scaleBy, 10) // zoom out
+        : Math.max(oldScale / scaleBy, 0.3);
 
     stage.scale({ x: newScale, y: newScale });
 
@@ -72,44 +71,24 @@ const Board = () => {
         -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
     });
   };
-
   return (
-    <Stage
-      width={window.innerWidth * 2}
-      height={window.innerHeight * 2}
-      scaleX={board.stageScale}
-      scaleY={board.stageScale}
-      x={board.stageX}
-      y={board.stageY}
-      onWheel={handleWheel}
-      // draggable={true}
-    >
-      <Layer>
-        {stars.map((star) => (
-          <Rect
-            key={star.id}
-            id={star.id}
-            x={star.x}
-            y={star.y}
-            width={50}
-            height={50}
-            fill='red'
-            draggable
-            // rotation={star.rotation}
-            shadowColor='black'
-            shadowBlur={star.isDragging ? 10 : 0}
-            shadowOpacity={star.isDragging ? 0.6 : 0}
-            shadowOffsetX={star.isDragging ? 10 : 5}
-            shadowOffsetY={star.isDragging ? 10 : 5}
-            // scaleX={star.isDragging ? 1.2 : 1}
-            // scaleY={star.isDragging ? 1.2 : 1}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          />
-        ))}
-      </Layer>
-    </Stage>
+    <div style={{ position: 'relative' }}>
+      <Board
+        board={board}
+        stars={stars}
+        handleWheel={handleWheel}
+        handleDragStart={handleDragStart}
+        handleDragEnd={handleDragEnd}
+      />
+      <MiniMap
+        board={board}
+        stars={stars}
+        handleWheel={handleWheel}
+        handleDragStart={handleDragStart}
+        handleDragEnd={handleDragEnd}
+      />
+    </div>
   );
 };
 
-export default Board;
+export default Screen;

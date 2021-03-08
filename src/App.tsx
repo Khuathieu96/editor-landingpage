@@ -1,12 +1,10 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Board from './components/Board';
+import Screen from './components/Screen';
 
 function App() {
-  return (
-   <Board/>
-  );
+  return <Screen />;
 }
 
 export default App;
