@@ -3,7 +3,7 @@ import { Stage, Layer, Rect, Text } from 'react-konva';
 import { MiniBar } from './components/MiniBar';
 
 type BoardProps = {
-  board: { stageScale: number; stageX: number; stageY: number };
+  board: { stageScale: number; width: number; height: number };
   stars: {
     id: string;
     x: number;
@@ -15,6 +15,12 @@ type BoardProps = {
   handleDragEnd: (e: any) => void;
 };
 
+type zoomState = {
+  x: number;
+  y: number;
+  id: string;
+};
+
 const MiniMap = ({
   board,
   stars,
@@ -22,6 +28,22 @@ const MiniMap = ({
   handleDragStart,
   handleDragEnd,
 }: BoardProps) => {
+  const [zoom, setZoom] = useState<zoomState>({
+    x: 1,
+    y: 1,
+    id: 'zoom',
+  });
+
+  const handleClickZoom = (e: any) => {
+    setZoom((prevState) => ({
+      ...prevState,
+      x: e.evt.offsetX * 4 - 500 / 2,
+      y: e.evt.offsetY * 4 - 500 / 2,
+    }));
+  };
+  const minStarX = Math.min(...stars.map((item) => item.x));
+  const minStarY = Math.min(...stars.map((item) => item.y));
+
   return (
     <div
       style={{
@@ -30,69 +52,73 @@ const MiniMap = ({
         boxShadow: '0 8px 16px 0 rgb(0 0 0 / 12%)',
         background: 'white',
         borderRadius: 4,
+        // width: 270,
+        // height: 220,
         bottom: 20,
         right: 20,
       }}
     >
-      <Stage
-        width={window.innerWidth / 4}
-        height={window.innerHeight / 4}
-        scaleX={board.stageScale / 4}
-        scaleY={board.stageScale / 4}
-        x={board.stageX / 4}
-        y={board.stageY / 4}
-        // onWheel={handleWheel}
-        // draggable={true}
+      <div
+        style={{
+          width: 300,
+          height: 150,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        <Layer>
-          {stars.map((star) => (
-            <Rect
-              key={star.id}
-              id={star.id}
-              x={star.x}
-              y={star.y}
-              width={50}
-              height={50}
-              fill='red'
-              // draggable
-              // rotation={star.rotation}
+        <Stage
+          width={board.width}
+          height={board.height}
+          scaleX={board.stageScale}
+          scaleY={board.stageScale}
+          // onWheel={handleWheel}
+          draggable={true}
+          style={{ background: 'yellow' }}
+        >
+          <Layer>
+            {stars.map((star) => {
+              console.log('minStarX', minStarX, board.stageScale);
 
-              scaleX={star.isDragging ? 1.2 : 1}
-              scaleY={star.isDragging ? 1.2 : 1}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            />
-          ))}
-        </Layer>
-      </Stage>
+              console.log('fasdfdas', (star.x - minStarX) / board.stageScale);
+              return (
+                <Rect
+                  key={star.id}
+                  id={star.id}
+                  x={(star.x - minStarX) / board.stageScale}
+                  y={(star.y - minStarY) / board.stageScale}
+                  width={50 / board.stageScale}
+                  height={50 / board.stageScale}
+                  fill='red'
+                />
+              );
+            })}
+          </Layer>
+        </Stage>
+      </div>
 
-      <Stage
+      {/* <Stage
         style={{ position: 'absolute', top: 0, left: 0 }}
-        width={window.innerWidth / 4}
-        height={window.innerHeight / 4}
-        scaleX={board.stageScale / 4}
-        scaleY={board.stageScale / 4}
-        x={board.stageX / 4}
-        y={board.stageY / 4}
-        // onWheel={handleWheel}
-        // draggable={true}
+        width={300}
+        height={150}
+        onClick={handleClickZoom}
       >
         <Layer>
           <Rect
-            key={'star.id'}
-            id={'star.id'}
-            x={12}
-            y={12}
-            width={500}
-            height={500}
+            key={zoom.id}
+            id={zoom.id}
+            x={zoom.x}
+            y={zoom.y}
+            width={500 / 4}
+            height={500 / 4}
             stroke={'black'}
-            strokeWidth={2}
+            strokeWidth={1}
             draggable
             // onDragStart={handleDragStart}
             // onDragEnd={handleDragEnd}
           />
         </Layer>
-      </Stage>
+      </Stage> */}
 
       <div>
         <MiniBar />

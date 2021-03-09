@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Stage, Layer, Rect, Text } from 'react-konva';
 
 type BoardProps = {
@@ -12,6 +12,9 @@ type BoardProps = {
   handleWheel: (e: any) => void;
   handleDragStart: (e: any) => void;
   handleDragEnd: (e: any) => void;
+  onDragMove: (e: any) => void;
+  onDragEndStage: (e: any) => void;
+  inputEl: any;
 };
 
 const Board = ({
@@ -20,6 +23,9 @@ const Board = ({
   handleWheel,
   handleDragStart,
   handleDragEnd,
+  onDragMove,
+  onDragEndStage,
+  inputEl,
 }: BoardProps) => {
   return (
     <Stage
@@ -32,11 +38,10 @@ const Board = ({
       y={board.stageY}
       onWheel={handleWheel}
       draggable={true}
-      onDragMove={(e) => {
-        console.log('drag move', e);
-      }}
+      onDragMove={onDragMove}
+      onDragEnd={onDragEndStage}
     >
-      <Layer>
+      <Layer ref={inputEl} width={1000}>
         {stars.map((star) => (
           <Rect
             key={star.id}
@@ -52,8 +57,6 @@ const Board = ({
             shadowOpacity={star.isDragging ? 0.6 : 0}
             shadowOffsetX={star.isDragging ? 10 : 5}
             shadowOffsetY={star.isDragging ? 10 : 5}
-            scaleX={star.isDragging ? 1.2 : 1}
-            scaleY={star.isDragging ? 1.2 : 1}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           />

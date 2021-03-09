@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
 
 function generateShapes() {
-  return [...Array(10)].map((_, i) => ({
+  return [...Array(2)].map((_, i) => ({
     id: i.toString(),
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
@@ -21,6 +21,16 @@ const Screen: React.FC = () => {
     stageX: 0,
     stageY: 0,
   });
+  const [miniBoard, setMiniBoard] = useState({
+    width: 300,
+    height: 150,
+    stageScale: 1,
+  });
+  const inputEl = useRef<any>(null);
+
+  useEffect(() => {
+    onDragEndStage();
+  }, []);
 
   const handleDragStart = (e: any) => {
     const id = e.target.id();
@@ -43,6 +53,40 @@ const Screen: React.FC = () => {
         };
       }),
     );
+  };
+  const onDragMove = (e: any) => {
+    setStars(
+      stars.map((star) => {
+        if (e.target.attrs.id === star.id)
+          return {
+            ...star,
+            x: e.target.attrs.x,
+            y: e.target.attrs.y,
+          };
+        return star;
+      }),
+    );
+  };
+
+  const onDragEndStage = () => {
+    const { width, height } = inputEl.current.getClientRect();
+    const { width: widthBoard, height: heightBoard } = inputEl.current.size();
+    // console.log('eeeeeeeee', width, height);
+    // console.log('aaaaaaaaa', widthBoard, heightBoard);
+    if (2 * height > width) {
+      // console.log('aaaaaaaaa');
+      setMiniBoard({
+        width: (width * 150) / height,
+        height: 150,
+        stageScale: height / 150,
+      });
+    } else {
+      setMiniBoard({
+        width: 300,
+        height: (height * 300) / width,
+        stageScale: width / 300,
+      });
+    }
   };
 
   const handleWheel = (e: any) => {
@@ -79,9 +123,12 @@ const Screen: React.FC = () => {
         handleWheel={handleWheel}
         handleDragStart={handleDragStart}
         handleDragEnd={handleDragEnd}
+        onDragMove={onDragMove}
+        onDragEndStage={onDragEndStage}
+        inputEl={inputEl}
       />
       <MiniMap
-        board={board}
+        board={miniBoard}
         stars={stars}
         handleWheel={handleWheel}
         handleDragStart={handleDragStart}
