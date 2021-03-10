@@ -1,21 +1,37 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
+import { Stars } from '../../types/types';
 
 function generateShapes() {
-  return [...Array(2)].map((_, i) => ({
-    id: i.toString(),
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    // rotation: Math.random() * 180,
-    isDragging: false,
-  }));
+  return [
+    {
+      id: 'frame',
+      x: (window.innerWidth - 1000) / 2,
+      y: (window.innerHeight - 500) / 2,
+      width: 1000,
+      height: 500,
+      fillColor: '#de9191',
+      draggable: false,
+      isDragging: false,
+    },
+    ...[...Array(10)].map((_, i) => ({
+      id: i.toString(),
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      width: 50,
+      height: 50,
+      draggable: true,
+      fillColor: i % 3 === 0 ? '#84ce90' : i % 3 === 1 ? '#d5d690' : 'grey',
+      isDragging: false,
+    })),
+  ];
 }
 
 const INITIAL_STATE = generateShapes();
 
 const Screen: React.FC = () => {
-  const [stars, setStars] = useState(INITIAL_STATE);
+  const [stars, setStars] = useState<Stars[]>(INITIAL_STATE);
   const [board, setBoard] = useState({
     stageScale: 1,
     stageX: 0,
@@ -34,14 +50,19 @@ const Screen: React.FC = () => {
 
   const handleDragStart = (e: any) => {
     const id = e.target.id();
-    setStars(
-      stars.map((star) => {
-        return {
-          ...star,
-          isDragging: star.id === id,
-        };
-      }),
-    );
+
+    const indexStarSelected = stars.findIndex((item) => item.id === id);
+    const stareSelected = stars.find((item) => item.id === id);
+
+    if (stareSelected) {
+      const sortedStars: Stars[] = [
+        ...stars.slice(0, indexStarSelected),
+        ...stars.slice(indexStarSelected + 1, stars.length + 1),
+        { ...stareSelected, isDragging: true },
+      ];
+
+      setStars(sortedStars);
+    }
   };
 
   const handleDragEnd = () => {
@@ -57,34 +78,50 @@ const Screen: React.FC = () => {
   const onDragMove = (e: any) => {
     setStars(
       stars.map((star) => {
-        if (e.target.attrs.id === star.id)
+        if (e.target.attrs.id === star.id) {
           return {
             ...star,
             x: e.target.attrs.x,
             y: e.target.attrs.y,
           };
+        }
         return star;
       }),
     );
-  };
 
-  const onDragEndStage = () => {
-    const { width, height } = inputEl.current.getClientRect();
-    const { width: widthBoard, height: heightBoard } = inputEl.current.size();
-    // console.log('eeeeeeeee', width, height);
-    // console.log('aaaaaaaaa', widthBoard, heightBoard);
+    const { width, height } = inputEl.current.getClientRect({
+      skipTransform: true,
+    });
     if (2 * height > width) {
-      // console.log('aaaaaaaaa');
       setMiniBoard({
         width: (width * 150) / height,
         height: 150,
-        stageScale: height / 150,
+        stageScale: 150 / height,
       });
     } else {
       setMiniBoard({
         width: 300,
         height: (height * 300) / width,
-        stageScale: width / 300,
+        stageScale: 300 / width,
+      });
+    }
+  };
+
+  const onDragEndStage = () => {
+    const { width, height } = inputEl.current.getClientRect({
+      skipTransform: true,
+    });
+    if (2 * height > width) {
+      setMiniBoard({
+        width: (width * 150) / height,
+        height: 150,
+        stageScale: 150 / height,
+      });
+    } else {
+      setMiniBoard({
+        width: 300,
+        height: (height * 300) / width,
+        stageScale: 300 / width,
       });
     }
   };
@@ -124,10 +161,11 @@ const Screen: React.FC = () => {
         handleDragStart={handleDragStart}
         handleDragEnd={handleDragEnd}
         onDragMove={onDragMove}
-        onDragEndStage={onDragEndStage}
+        // onDragEndStage={onDragEndStage}
         inputEl={inputEl}
       />
       <MiniMap
+        stageScale={board.stageScale}
         board={miniBoard}
         stars={stars}
         handleWheel={handleWheel}

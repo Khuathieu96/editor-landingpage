@@ -1,19 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { Stage, Layer, Rect, Text } from 'react-konva';
+import { Stars } from '../../types/types';
 
 type BoardProps = {
   board: { stageScale: number; stageX: number; stageY: number };
-  stars: {
-    id: string;
-    x: number;
-    y: number;
-    isDragging: boolean;
-  }[];
+  stars: Stars[];
   handleWheel: (e: any) => void;
   handleDragStart: (e: any) => void;
   handleDragEnd: (e: any) => void;
   onDragMove: (e: any) => void;
-  onDragEndStage: (e: any) => void;
+  // onDragEndStage: (e: any) => void;
   inputEl: any;
 };
 
@@ -24,7 +20,7 @@ const Board = ({
   handleDragStart,
   handleDragEnd,
   onDragMove,
-  onDragEndStage,
+  // onDragEndStage,
   inputEl,
 }: BoardProps) => {
   return (
@@ -39,7 +35,7 @@ const Board = ({
       onWheel={handleWheel}
       draggable={true}
       onDragMove={onDragMove}
-      onDragEnd={onDragEndStage}
+      // onDragEnd={onDragEndStage}
     >
       <Layer ref={inputEl} width={1000}>
         {stars.map((star) => (
@@ -48,10 +44,10 @@ const Board = ({
             id={star.id}
             x={star.x}
             y={star.y}
-            width={50}
-            height={50}
-            fill='red'
-            draggable
+            width={star.width}
+            height={star.height}
+            fill={star.fillColor}
+            draggable={star.draggable}
             shadowColor='black'
             shadowBlur={star.isDragging ? 10 : 0}
             shadowOpacity={star.isDragging ? 0.6 : 0}
