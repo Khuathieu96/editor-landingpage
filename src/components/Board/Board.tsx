@@ -1,10 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { Stage, Layer, Rect, Text } from 'react-konva';
-import { Stars } from '../../types/types';
+import { Piece } from '../../types/types';
 
 type BoardProps = {
-  board: { stageScale: number; stageX: number; stageY: number };
-  stars: Stars[];
+  board: {
+    stageScale: number;
+    height: number;
+    width: number;
+    stageX: number;
+    stageY: number;
+  };
+  pieces: Piece[];
   handleWheel: (e: any) => void;
   handleDragStart: (e: any) => void;
   handleDragEnd: (e: any) => void;
@@ -15,7 +21,7 @@ type BoardProps = {
 
 const Board = ({
   board,
-  stars,
+  pieces,
   handleWheel,
   handleDragStart,
   handleDragEnd,
@@ -25,9 +31,13 @@ const Board = ({
 }: BoardProps) => {
   return (
     <Stage
-      style={{ background: '#f2f2f2' }}
-      width={window.innerWidth}
-      height={window.innerHeight}
+      style={{
+        background: '#f2f2f2',
+        width: board.width,
+        height: board.height,
+      }}
+      width={board.width}
+      height={board.height}
       scaleX={board.stageScale}
       scaleY={board.stageScale}
       x={board.stageX}
@@ -38,21 +48,21 @@ const Board = ({
       // onDragEnd={onDragEndStage}
     >
       <Layer ref={inputEl} width={1000}>
-        {stars.map((star) => (
+        {pieces.map((piece) => (
           <Rect
-            key={star.id}
-            id={star.id}
-            x={star.x}
-            y={star.y}
-            width={star.width}
-            height={star.height}
-            fill={star.fillColor}
-            draggable={star.draggable}
+            key={piece.id}
+            id={piece.id}
+            x={piece.x}
+            y={piece.y}
+            width={piece.width}
+            height={piece.height}
+            fill={piece.fillColor}
+            draggable={piece.draggable}
             shadowColor='black'
-            shadowBlur={star.isDragging ? 10 : 0}
-            shadowOpacity={star.isDragging ? 0.6 : 0}
-            shadowOffsetX={star.isDragging ? 10 : 5}
-            shadowOffsetY={star.isDragging ? 10 : 5}
+            shadowBlur={piece.isDragging ? 10 : 0}
+            shadowOpacity={piece.isDragging ? 0.6 : 0}
+            shadowOffsetX={piece.isDragging ? 10 : 5}
+            shadowOffsetY={piece.isDragging ? 10 : 5}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           />

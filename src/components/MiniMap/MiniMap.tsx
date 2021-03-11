@@ -1,47 +1,38 @@
 import React, { useState } from 'react';
 import { Stage, Layer, Rect, Text } from 'react-konva';
-import { Stars } from '../../types/types';
+import { Piece, zoomState } from '../../types/types';
 import { MiniBar } from './components/MiniBar';
 
-type BoardProps = {
-  board: { stageScale: number; width: number; height: number };
-  stars: Stars[];
+type MiniMapProps = {
+  miniBoard: { miniBoardScale: number; width: number; height: number };
+  pieces: Piece[];
   stageScale: number;
-  handleWheel: (e: any) => void;
   handleDragStart: (e: any) => void;
   handleDragEnd: (e: any) => void;
-};
-
-type zoomState = {
-  x: number;
-  y: number;
-  id: string;
+  zoom: zoomState;
+  handleSetCoordinateZoom: (e: zoomState) => void;
 };
 
 const MiniMap = ({
-  board,
-  stars,
-  handleWheel,
+  miniBoard,
+  pieces,
+  zoom,
+  handleSetCoordinateZoom,
   handleDragStart,
   handleDragEnd,
   stageScale,
-}: BoardProps) => {
-  const [zoom, setZoom] = useState<zoomState>({
-    x: 1,
-    y: 1,
-    id: 'zoom',
-  });
-
+}: MiniMapProps) => {
   const handleClickZoom = (e: any) => {
     if (e.target.getType() === 'Stage')
-      setZoom((prevState) => ({
-        ...prevState,
+      handleSetCoordinateZoom({
+        ...zoom,
+        hidden: false,
         x: e.evt.offsetX - 100 / 2,
         y: e.evt.offsetY - 100 / 2,
-      }));
+      });
   };
-  const minStarX = Math.min(...stars.map((item) => item.x));
-  const minStarY = Math.min(...stars.map((item) => item.y));
+  const minStarX = Math.min(...pieces.map((item) => item.x));
+  const minStarY = Math.min(...pieces.map((item) => item.y));
 
   return (
     <div
@@ -65,23 +56,22 @@ const MiniMap = ({
         }}
       >
         <Stage
-          width={board.width}
-          height={board.height}
-          scaleX={board.stageScale}
-          scaleY={board.stageScale}
-          // onWheel={handleWheel}
+          width={miniBoard.width}
+          height={miniBoard.height}
+          scaleX={miniBoard.miniBoardScale}
+          scaleY={miniBoard.miniBoardScale}
           draggable={true}
         >
           <Layer>
-            {stars.map((star) => (
+            {pieces.map((piece) => (
               <Rect
-                key={star.id}
-                id={star.id}
-                x={star.x - minStarX}
-                y={star.y - minStarY}
-                width={star.width}
-                height={star.height}
-                fill={star.fillColor}
+                key={piece.id}
+                id={piece.id}
+                x={piece.x - minStarX}
+                y={piece.y - minStarY}
+                width={piece.width}
+                height={piece.height}
+                fill={piece.fillColor}
               />
             ))}
           </Layer>
@@ -100,8 +90,16 @@ const MiniMap = ({
             id={zoom.id}
             x={zoom.x}
             y={zoom.y}
-            width={window.innerWidth / stageScale / 10}
-            height={window.innerHeight / stageScale / 10}
+            width={
+              zoom.hidden
+                ? 0
+                : (window.innerWidth * miniBoard.miniBoardScale) / stageScale
+            }
+            height={
+              zoom.hidden
+                ? 0
+                : (window.innerHeight * miniBoard.miniBoardScale) / stageScale
+            }
             stroke={'black'}
             strokeWidth={1}
             draggable

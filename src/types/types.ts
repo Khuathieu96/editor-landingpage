@@ -1,6 +1,6 @@
 
 
-export interface Stars {
+export interface Piece {
     id: string;
     x: number;
     width: number;
@@ -10,3 +10,10 @@ export interface Stars {
     draggable: boolean;
     fillColor: string;
   }
+
+export  type zoomState = {
+    x: number;
+    y: number;
+    id: string;
+    hidden: boolean;
+  };

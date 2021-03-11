@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
-import { Stars } from '../../types/types';
+import { Piece, zoomState } from '../../types/types';
 
 function generateShapes() {
   return [
@@ -31,83 +31,96 @@ function generateShapes() {
 const INITIAL_STATE = generateShapes();
 
 const Screen: React.FC = () => {
-  const [stars, setStars] = useState<Stars[]>(INITIAL_STATE);
+  const [pieces, setPieces] = useState<Piece[]>(INITIAL_STATE);
   const [board, setBoard] = useState({
     stageScale: 1,
     stageX: 0,
     stageY: 0,
+    width: window.innerWidth,
+    height: window.innerHeight,
   });
   const [miniBoard, setMiniBoard] = useState({
     width: 300,
     height: 150,
-    stageScale: 1,
+    miniBoardScale: 1,
+  });
+  const [zoom, setZoom] = useState<zoomState>({
+    x: 0,
+    y: 0,
+    id: 'zoom',
+    hidden: true,
   });
   const inputEl = useRef<any>(null);
 
   useEffect(() => {
-    onDragEndStage();
+    handleUpdateSizeMiniMap();
   }, []);
+
+  window.onresize = function () {
+    setBoard({
+      ...board,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+
+  const handleSetCoordinateZoom = (val: zoomState) => {
+    setZoom(val);
+  };
 
   const handleDragStart = (e: any) => {
     const id = e.target.id();
 
-    const indexStarSelected = stars.findIndex((item) => item.id === id);
-    const stareSelected = stars.find((item) => item.id === id);
+    const indexStarSelected = pieces.findIndex((item) => item.id === id);
+    const pieceSelected = pieces.find((item) => item.id === id);
 
-    if (stareSelected) {
-      const sortedStars: Stars[] = [
-        ...stars.slice(0, indexStarSelected),
-        ...stars.slice(indexStarSelected + 1, stars.length + 1),
-        { ...stareSelected, isDragging: true },
+    if (pieceSelected) {
+      const sortedPiece: Piece[] = [
+        ...pieces.slice(0, indexStarSelected),
+        ...pieces.slice(indexStarSelected + 1, pieces.length + 1),
+        { ...pieceSelected, isDragging: true },
       ];
 
-      setStars(sortedStars);
+      setPieces(sortedPiece);
     }
   };
 
   const handleDragEnd = () => {
-    setStars(
-      stars.map((star) => {
+    setPieces(
+      pieces.map((piece) => {
         return {
-          ...star,
+          ...piece,
           isDragging: false,
         };
       }),
     );
   };
+
   const onDragMove = (e: any) => {
-    setStars(
-      stars.map((star) => {
-        if (e.target.attrs.id === star.id) {
+    if (e.target.getType() === 'Stage')
+      handleSetCoordinateZoom({
+        ...zoom,
+        x: (-e.target.attrs.x * miniBoard.miniBoardScale) / board.stageScale,
+        y: (-e.target.attrs.y * miniBoard.miniBoardScale) / board.stageScale,
+      });
+
+    setPieces(
+      pieces.map((piece) => {
+        if (e.target.attrs.id === piece.id) {
           return {
-            ...star,
+            ...piece,
             x: e.target.attrs.x,
             y: e.target.attrs.y,
           };
         }
-        return star;
+        return piece;
       }),
     );
 
-    const { width, height } = inputEl.current.getClientRect({
-      skipTransform: true,
-    });
-    if (2 * height > width) {
-      setMiniBoard({
-        width: (width * 150) / height,
-        height: 150,
-        stageScale: 150 / height,
-      });
-    } else {
-      setMiniBoard({
-        width: 300,
-        height: (height * 300) / width,
-        stageScale: 300 / width,
-      });
-    }
+    handleUpdateSizeMiniMap();
   };
 
-  const onDragEndStage = () => {
+  const handleUpdateSizeMiniMap = () => {
     const { width, height } = inputEl.current.getClientRect({
       skipTransform: true,
     });
@@ -115,13 +128,13 @@ const Screen: React.FC = () => {
       setMiniBoard({
         width: (width * 150) / height,
         height: 150,
-        stageScale: 150 / height,
+        miniBoardScale: 150 / height,
       });
     } else {
       setMiniBoard({
         width: 300,
         height: (height * 300) / width,
-        stageScale: 300 / width,
+        miniBoardScale: 300 / width,
       });
     }
   };
@@ -142,21 +155,38 @@ const Screen: React.FC = () => {
         ? Math.min(oldScale * scaleBy, 10) // zoom out
         : Math.max(oldScale / scaleBy, 0.3);
 
-    stage.scale({ x: newScale, y: newScale });
-
-    setBoard({
+    const newBoard = {
+      ...board,
       stageScale: newScale,
       stageX:
         -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
       stageY:
         -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+    };
+
+    stage.scale({ x: newScale, y: newScale });
+
+    setBoard(newBoard);
+
+    handleSetCoordinateZoom({
+      ...zoom,
+      x: -(newBoard.stageX * miniBoard.miniBoardScale) / newScale,
+      y: -(newBoard.stageY * miniBoard.miniBoardScale) / newScale,
     });
   };
+
+  const handleDragStartZoom = () => {
+    setZoom((prevState) => ({ ...prevState, hidden: false }));
+  };
+
+  const handleDragEndZoom = () => {
+    setZoom((prevState) => ({ ...prevState, hidden: false }));
+  };
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
       <Board
         board={board}
-        stars={stars}
+        pieces={pieces}
         handleWheel={handleWheel}
         handleDragStart={handleDragStart}
         handleDragEnd={handleDragEnd}
@@ -166,11 +196,12 @@ const Screen: React.FC = () => {
       />
       <MiniMap
         stageScale={board.stageScale}
-        board={miniBoard}
-        stars={stars}
-        handleWheel={handleWheel}
-        handleDragStart={handleDragStart}
-        handleDragEnd={handleDragEnd}
+        miniBoard={miniBoard}
+        pieces={pieces}
+        handleSetCoordinateZoom={handleSetCoordinateZoom}
+        zoom={zoom}
+        handleDragStart={handleDragStartZoom}
+        handleDragEnd={handleDragEndZoom}
       />
     </div>
   );
