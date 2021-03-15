@@ -9,6 +9,22 @@ export interface Piece {
     isDragging: boolean;
     draggable: boolean;
     fillColor: string;
+}
+  
+export interface  EdgeType {
+  top: number,
+  right: number,
+  bottom: number,
+  left: number,
+}
+export interface Frame {
+    id: string;
+    x: number;
+    y: number;
+    isDragging: boolean;
+    draggable: boolean;
+    fillColor: string;
+    edgeType: EdgeType
   }
 
 export  type zoomState = {
@@ -16,4 +32,5 @@ export  type zoomState = {
     y: number;
     id: string;
     hidden: boolean;
-  };
+};
+  

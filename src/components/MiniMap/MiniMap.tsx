@@ -7,30 +7,19 @@ type MiniMapProps = {
   miniBoard: { miniBoardScale: number; width: number; height: number };
   pieces: Piece[];
   stageScale: number;
-  handleDragStart: (e: any) => void;
-  handleDragEnd: (e: any) => void;
+  handleDragMoveZoom: (e: any) => void;
+  handleClickZoom: (e: any) => void;
   zoom: zoomState;
-  handleSetCoordinateZoom: (e: zoomState) => void;
 };
 
 const MiniMap = ({
   miniBoard,
   pieces,
   zoom,
-  handleSetCoordinateZoom,
-  handleDragStart,
-  handleDragEnd,
+  handleDragMoveZoom,
+  handleClickZoom,
   stageScale,
 }: MiniMapProps) => {
-  const handleClickZoom = (e: any) => {
-    if (e.target.getType() === 'Stage')
-      handleSetCoordinateZoom({
-        ...zoom,
-        hidden: false,
-        x: e.evt.offsetX - 100 / 2,
-        y: e.evt.offsetY - 100 / 2,
-      });
-  };
   const minStarX = Math.min(...pieces.map((item) => item.x));
   const minStarY = Math.min(...pieces.map((item) => item.y));
 
@@ -86,25 +75,15 @@ const MiniMap = ({
       >
         <Layer>
           <Rect
-            key={zoom.id}
-            id={zoom.id}
-            x={zoom.x}
-            y={zoom.y}
-            width={
-              zoom.hidden
-                ? 0
-                : (window.innerWidth * miniBoard.miniBoardScale) / stageScale
-            }
+            {...zoom}
+            width={(window.innerWidth * miniBoard.miniBoardScale) / stageScale}
             height={
-              zoom.hidden
-                ? 0
-                : (window.innerHeight * miniBoard.miniBoardScale) / stageScale
+              (window.innerHeight * miniBoard.miniBoardScale) / stageScale
             }
             stroke={'black'}
-            strokeWidth={1}
+            strokeWidth={zoom.hidden ? 0 : 1}
             draggable
-            // onDragStart={handleDragStart}
-            // onDragEnd={handleDragEnd}
+            onDragMove={handleDragMoveZoom}
           />
         </Layer>
       </Stage>

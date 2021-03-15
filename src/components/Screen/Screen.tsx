@@ -1,37 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
-import { Piece, zoomState } from '../../types/types';
+import { Piece, Frame, zoomState } from '../../types/types';
+import { generateFrame } from '../../utils/frames';
+import { generateShapes } from '../../utils/screen';
 
-function generateShapes() {
-  return [
-    {
-      id: 'frame',
-      x: (window.innerWidth - 1000) / 2,
-      y: (window.innerHeight - 500) / 2,
-      width: 1000,
-      height: 500,
-      fillColor: '#de9191',
-      draggable: false,
-      isDragging: false,
-    },
-    ...[...Array(10)].map((_, i) => ({
-      id: i.toString(),
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      width: 50,
-      height: 50,
-      draggable: true,
-      fillColor: i % 3 === 0 ? '#84ce90' : i % 3 === 1 ? '#d5d690' : 'grey',
-      isDragging: false,
-    })),
-  ];
-}
+// const bnum = process.env.REACT_APP_NUMBER_TILES;
+// const widtash = process.env.REACT_APP_WIDTH_TILE;
 
-const INITIAL_STATE = generateShapes();
+const INITIAL_STATE = generateShapes(200, 50);
+const INITIAL_FRAMES = generateFrame();
 
 const Screen: React.FC = () => {
   const [pieces, setPieces] = useState<Piece[]>(INITIAL_STATE);
+  const [frames, setFrames] = useState<Frame[]>(INITIAL_FRAMES);
   const [board, setBoard] = useState({
     stageScale: 1,
     stageX: 0,
@@ -64,13 +46,8 @@ const Screen: React.FC = () => {
     });
   };
 
-  const handleSetCoordinateZoom = (val: zoomState) => {
-    setZoom(val);
-  };
-
   const handleDragStart = (e: any) => {
     const id = e.target.id();
-
     const indexStarSelected = pieces.findIndex((item) => item.id === id);
     const pieceSelected = pieces.find((item) => item.id === id);
 
@@ -96,9 +73,9 @@ const Screen: React.FC = () => {
     );
   };
 
-  const onDragMove = (e: any) => {
+  const handleDragMove = (e: any) => {
     if (e.target.getType() === 'Stage')
-      handleSetCoordinateZoom({
+      setZoom({
         ...zoom,
         x: (-e.target.attrs.x * miniBoard.miniBoardScale) / board.stageScale,
         y: (-e.target.attrs.y * miniBoard.miniBoardScale) / board.stageScale,
@@ -168,41 +145,60 @@ const Screen: React.FC = () => {
 
     setBoard(newBoard);
 
-    handleSetCoordinateZoom({
+    setZoom({
       ...zoom,
       x: -(newBoard.stageX * miniBoard.miniBoardScale) / newScale,
       y: -(newBoard.stageY * miniBoard.miniBoardScale) / newScale,
     });
   };
 
-  const handleDragStartZoom = () => {
+  const handleDragMoveZoom = (e: any) => {
     setZoom((prevState) => ({ ...prevState, hidden: false }));
+    setBoard((prevState) => ({
+      ...prevState,
+      stageX: (-e.target.attrs.x / miniBoard.miniBoardScale) * board.stageScale,
+      stageY: (-e.target.attrs.y / miniBoard.miniBoardScale) * board.stageScale,
+    }));
   };
 
-  const handleDragEndZoom = () => {
-    setZoom((prevState) => ({ ...prevState, hidden: false }));
+  const handleClickZoom = (e: any) => {
+    if (e.target.getType() === 'Stage') {
+      setBoard((prevState) => ({
+        ...prevState,
+        stageX: (-e.evt.offsetX / miniBoard.miniBoardScale) * board.stageScale,
+        stageY: (-e.evt.offsetY / miniBoard.miniBoardScale) * board.stageScale,
+      }));
+
+      setZoom({
+        ...zoom,
+        hidden: false,
+        x: e.evt.offsetX,
+        y: e.evt.offsetY,
+      });
+    }
   };
+
   return (
     <div style={{ position: 'relative', overflow: 'hidden' }}>
       <Board
         board={board}
         pieces={pieces}
+        frames={frames}
         handleWheel={handleWheel}
         handleDragStart={handleDragStart}
         handleDragEnd={handleDragEnd}
-        onDragMove={onDragMove}
+        handleDragMove={handleDragMove}
         // onDragEndStage={onDragEndStage}
         inputEl={inputEl}
       />
-      <MiniMap
+      {/* <MiniMap
         stageScale={board.stageScale}
         miniBoard={miniBoard}
         pieces={pieces}
-        handleSetCoordinateZoom={handleSetCoordinateZoom}
+        handleClickZoom={handleClickZoom}
         zoom={zoom}
-        handleDragStart={handleDragStartZoom}
-        handleDragEnd={handleDragEndZoom}
-      />
+        handleDragMoveZoom={handleDragMoveZoom}
+      /> */}
     </div>
   );
 };

@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { Stage, Layer, Rect, Text } from 'react-konva';
-import { Piece } from '../../types/types';
+import React from 'react';
+import { Stage, Layer, Rect } from 'react-konva';
+import { Piece, Frame } from '../../types/types';
+import { Frames } from '../Frames';
 
 type BoardProps = {
   board: {
@@ -11,10 +12,11 @@ type BoardProps = {
     stageY: number;
   };
   pieces: Piece[];
+  frames: Frame[];
   handleWheel: (e: any) => void;
   handleDragStart: (e: any) => void;
   handleDragEnd: (e: any) => void;
-  onDragMove: (e: any) => void;
+  handleDragMove: (e: any) => void;
   // onDragEndStage: (e: any) => void;
   inputEl: any;
 };
@@ -22,11 +24,11 @@ type BoardProps = {
 const Board = ({
   board,
   pieces,
+  frames,
   handleWheel,
   handleDragStart,
   handleDragEnd,
-  onDragMove,
-  // onDragEndStage,
+  handleDragMove,
   inputEl,
 }: BoardProps) => {
   return (
@@ -44,10 +46,11 @@ const Board = ({
       y={board.stageY}
       onWheel={handleWheel}
       draggable={true}
-      onDragMove={onDragMove}
+      onDragMove={handleDragMove}
       // onDragEnd={onDragEndStage}
     >
       <Layer ref={inputEl} width={1000}>
+        <Frames frames={frames} />
         {pieces.map((piece) => (
           <Rect
             key={piece.id}
