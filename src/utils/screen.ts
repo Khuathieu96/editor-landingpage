@@ -14,3 +14,5 @@ export const generateShapes = (numTiles: number, width: number) => {
     isDragging: false,
   })});
 }
+
+console.log("tesst")
