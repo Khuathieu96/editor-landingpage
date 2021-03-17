@@ -1,7 +1,8 @@
 import React from 'react';
-import { Stage, Layer, Rect } from 'react-konva';
-import { Piece, Frame } from '../../types/types';
+import { Stage, Layer } from 'react-konva';
+import { PieceType, Frame } from '../../types/types';
 import { Frames } from '../Frames';
+import { Pieces } from '../Pieces';
 
 type BoardProps = {
   board: {
@@ -11,7 +12,7 @@ type BoardProps = {
     stageX: number;
     stageY: number;
   };
-  pieces: Piece[];
+  pieces: PieceType[];
   frames: Frame[];
   handleWheel: (e: any) => void;
   handleDragStart: (e: any) => void;
@@ -49,27 +50,14 @@ const Board = ({
       onDragMove={handleDragMove}
       // onDragEnd={onDragEndStage}
     >
-      <Layer ref={inputEl} width={1000}>
+      <Layer ref={inputEl}>
         <Frames frames={frames} />
-        {pieces.map((piece) => (
-          <Rect
-            key={piece.id}
-            id={piece.id}
-            x={piece.x}
-            y={piece.y}
-            width={piece.width}
-            height={piece.height}
-            fill={piece.fillColor}
-            draggable={piece.draggable}
-            shadowColor='black'
-            shadowBlur={piece.isDragging ? 10 : 0}
-            shadowOpacity={piece.isDragging ? 0.6 : 0}
-            shadowOffsetX={piece.isDragging ? 10 : 5}
-            shadowOffsetY={piece.isDragging ? 10 : 5}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          />
-        ))}
+
+        <Pieces
+          pieces={pieces}
+          handleDragStart={handleDragStart}
+          handleDragEnd={handleDragEnd}
+        />
       </Layer>
     </Stage>
   );

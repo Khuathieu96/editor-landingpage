@@ -1,9 +1,10 @@
+import { NUMBER_TILES } from "../types/constants";
 import { EdgeType } from "../types/types";
 
 
- const renderEdges = (
+const renderEdges = (
   ctx: any,
-  startedPointed: {x: number, y: number},
+  startedPointed: { x: number, y: number },
   edgesWidth: number,
   edgesType: string,
   curvedType: number
@@ -96,7 +97,7 @@ export const renderTiles = (context: any, widthTile: number, startPointx: number
 
 export const isEven = (number: number) => number % 2 === 0;
 
- const calculateEdgeType = (colIndex: number, rowIndex: number) => {
+export const calculateEdgeType = (colIndex: number, rowIndex: number) => {
   return (isEven(colIndex) && isEven(rowIndex)) ||
     (!isEven(colIndex) && !isEven(rowIndex))
     ? -1
@@ -104,19 +105,21 @@ export const isEven = (number: number) => number % 2 === 0;
 };
 
 
-export const generateFrame= ()=> {
-  return [...Array(200)].map((_, i) => {
-    
+export const generateFrame = () => {
+  return [...Array(NUMBER_TILES)].map((_, i) => {
+
     const colIndex = Math.floor(i % 20);
     const rowIndex = Math.floor(i / 20);
 
     return {
-      id: i.toString(),
-      x: (window.innerWidth -1000) / 2 + 50 * Math.floor(i % 20),
-      y: (window.innerHeight -500) / 2 + 50 * Math.floor(i / 20),  
+      id: "frame" + i.toString(),
+      x: (window.innerWidth - 1000) / 2 + 50 * Math.floor(i % 20),
+      y: (window.innerHeight - 500) / 2 + 50 * Math.floor(i / 20),
       draggable: false,
       fillColor: i % 3 === 0 ? '#84ce90' : i % 3 === 1 ? '#d5d690' : 'grey',
       isDragging: false,
+      strokeWidth: 0.5,
+      strokeColor: "black",
       edgeType: {
         top: rowIndex === 0 ? 0 : -calculateEdgeType(colIndex, rowIndex),
         right:
@@ -125,5 +128,6 @@ export const generateFrame= ()=> {
           rowIndex === 10 - 1 ? 0 : -calculateEdgeType(colIndex, rowIndex),
         left: colIndex === 0 ? 0 : calculateEdgeType(colIndex, rowIndex)
       }
-  }});
+    }
+  });
 }

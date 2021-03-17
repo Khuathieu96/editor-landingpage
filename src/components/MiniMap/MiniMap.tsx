@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { Stage, Layer, Rect, Text } from 'react-konva';
-import { Piece, zoomState } from '../../types/types';
+import React from 'react';
+import { Stage, Layer, Rect } from 'react-konva';
+import { Frame, PieceType, zoomState } from '../../types/types';
+import { Frames } from '../Frames';
+import { Pieces } from '../Pieces';
 import { MiniBar } from './components/MiniBar';
 
 type MiniMapProps = {
   miniBoard: { miniBoardScale: number; width: number; height: number };
-  pieces: Piece[];
+  pieces: PieceType[];
+  frames: Frame[];
   stageScale: number;
   handleDragMoveZoom: (e: any) => void;
   handleClickZoom: (e: any) => void;
@@ -15,13 +18,14 @@ type MiniMapProps = {
 const MiniMap = ({
   miniBoard,
   pieces,
+  frames,
   zoom,
   handleDragMoveZoom,
   handleClickZoom,
   stageScale,
 }: MiniMapProps) => {
-  const minStarX = Math.min(...pieces.map((item) => item.x));
-  const minStarY = Math.min(...pieces.map((item) => item.y));
+  const minStarX = Math.min(...[...pieces, ...frames].map((item) => item.x));
+  const minStarY = Math.min(...[...pieces, ...frames].map((item) => item.y));
 
   return (
     <div
@@ -52,17 +56,22 @@ const MiniMap = ({
           draggable={true}
         >
           <Layer>
-            {pieces.map((piece) => (
-              <Rect
-                key={piece.id}
-                id={piece.id}
-                x={piece.x - minStarX}
-                y={piece.y - minStarY}
-                width={piece.width}
-                height={piece.height}
-                fill={piece.fillColor}
-              />
-            ))}
+            <Frames
+              frames={frames.map((item) => ({
+                ...item,
+                x: item.x - minStarX,
+                y: item.y - minStarY,
+              }))}
+            />
+            <Pieces
+              pieces={pieces.map((item) => ({
+                ...item,
+                x: item.x - minStarX,
+                y: item.y - minStarY,
+              }))}
+              handleDragStart={() => {}}
+              handleDragEnd={() => {}}
+            />
           </Layer>
         </Stage>
       </div>

@@ -1,18 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
-import { Piece, Frame, zoomState } from '../../types/types';
+import { PieceType, Frame, zoomState } from '../../types/types';
 import { generateFrame } from '../../utils/frames';
 import { generateShapes } from '../../utils/screen';
 
 // const bnum = process.env.REACT_APP_NUMBER_TILES;
 // const widtash = process.env.REACT_APP_WIDTH_TILE;
 
-const INITIAL_STATE = generateShapes(200, 50);
+const INITIAL_STATE = generateShapes();
 const INITIAL_FRAMES = generateFrame();
 
 const Screen: React.FC = () => {
-  const [pieces, setPieces] = useState<Piece[]>(INITIAL_STATE);
+  const [pieces, setPieces] = useState<PieceType[]>(INITIAL_STATE);
   const [frames, setFrames] = useState<Frame[]>(INITIAL_FRAMES);
   const [board, setBoard] = useState({
     stageScale: 1,
@@ -52,7 +52,7 @@ const Screen: React.FC = () => {
     const pieceSelected = pieces.find((item) => item.id === id);
 
     if (pieceSelected) {
-      const sortedPiece: Piece[] = [
+      const sortedPiece: PieceType[] = [
         ...pieces.slice(0, indexStarSelected),
         ...pieces.slice(indexStarSelected + 1, pieces.length + 1),
         { ...pieceSelected, isDragging: true },
@@ -73,7 +73,33 @@ const Screen: React.FC = () => {
     );
   };
 
+  const handleMoveOverFrames = (x: number, y: number) => {
+    setFrames(
+      frames.map((frame) => {
+        if (
+          frame.x < x &&
+          x < frame.x + 50 &&
+          frame.y < y &&
+          y < frame.y + 50
+        ) {
+          return {
+            ...frame,
+            strokeColor: 'red',
+            strokeWidth: 2,
+          };
+        }
+        return {
+          ...frame,
+          strokeColor: 'black',
+          strokeWidth: 1,
+        };
+      }),
+    );
+  };
+
   const handleDragMove = (e: any) => {
+    // console.log('fasd', e.target.getAbsoluteTransform());
+    const { clientX, clientY } = e.evt;
     if (e.target.getType() === 'Stage')
       setZoom({
         ...zoom,
@@ -93,6 +119,8 @@ const Screen: React.FC = () => {
         return piece;
       }),
     );
+
+    handleMoveOverFrames(clientX, clientY);
 
     handleUpdateSizeMiniMap();
   };
@@ -191,14 +219,15 @@ const Screen: React.FC = () => {
         // onDragEndStage={onDragEndStage}
         inputEl={inputEl}
       />
-      {/* <MiniMap
+      <MiniMap
         stageScale={board.stageScale}
         miniBoard={miniBoard}
         pieces={pieces}
+        frames={frames}
         handleClickZoom={handleClickZoom}
         zoom={zoom}
         handleDragMoveZoom={handleDragMoveZoom}
-      /> */}
+      />
     </div>
   );
 };
