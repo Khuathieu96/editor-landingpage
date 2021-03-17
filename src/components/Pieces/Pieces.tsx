@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shape } from 'react-konva';
+import { WIDTH_TILE } from '../../types/constants';
 import { PieceType } from '../../types/types';
 import { renderTiles } from '../../utils/frames';
 
@@ -19,11 +20,11 @@ const Pieces = ({ pieces, handleDragStart, handleDragEnd }: PieceProps) => {
           fill={piece.fillColor}
           draggable={true}
           x={piece.x}
-          width={50}
-          height={50}
+          width={WIDTH_TILE}
+          height={WIDTH_TILE}
           y={piece.y}
           sceneFunc={(context, shape) => {
-            const widthTile = 50 / 3;
+            const widthTile = WIDTH_TILE / 3;
             context.beginPath();
             context.moveTo(0, 0);
             renderTiles(context, widthTile, 0, 0, piece.edgeType);

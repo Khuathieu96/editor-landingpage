@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shape } from 'react-konva';
+import { WIDTH_TILE } from '../../types/constants';
 import { Frame } from '../../types/types';
 import { renderTiles } from '../../utils/frames';
 
@@ -16,12 +17,12 @@ const Frames = ({ frames }: FrameProps) => {
           id={frame.id}
           fill={frame.fillColor}
           x={frame.x}
-          width={50}
-          height={50}
+          width={WIDTH_TILE}
+          height={WIDTH_TILE}
           y={frame.y}
           opacity={0.2}
           sceneFunc={(context, shape) => {
-            const widthTile = 50 / 3;
+            const widthTile = WIDTH_TILE / 3;
             context.beginPath();
             context.moveTo(0, 0);
             renderTiles(context, widthTile, 0, 0, frame.edgeType);

@@ -2,11 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
 import { PieceType, Frame, zoomState } from '../../types/types';
+import { NUMBER_COLUMNS, WIDTH_TILE, NUMBER_ROWS } from '../../types/constants';
 import { generateFrame } from '../../utils/frames';
 import { generateShapes } from '../../utils/screen';
-
-// const bnum = process.env.REACT_APP_NUMBER_TILES;
-// const widtash = process.env.REACT_APP_WIDTH_TILE;
 
 const INITIAL_STATE = generateShapes();
 const INITIAL_FRAMES = generateFrame();
@@ -62,44 +60,82 @@ const Screen: React.FC = () => {
     }
   };
 
-  const handleDragEnd = () => {
-    setPieces(
-      pieces.map((piece) => {
-        return {
-          ...piece,
-          isDragging: false,
-        };
-      }),
+  const handleDragEnd = (e: any) => {
+    const { x, y } = e.target.attrs;
+    const { id } = e.target.attrs;
+    const selectedFrames = frames.find(
+      (frame) => Math.abs(frame.x - x) < 25 && Math.abs(frame.y - y) < 25,
     );
+    const indexRowSelectedFrame = selectedFrames
+      ? Math.floor(parseInt(selectedFrames.id, 10) / NUMBER_COLUMNS) + 1
+      : 0;
+
+    if (e.target.getType() !== 'Stage') {
+      setPieces(
+        pieces.map((piece) => {
+          if (selectedFrames && piece.id === id) {
+            if (
+              JSON.stringify(piece.edgeType) ===
+              JSON.stringify(selectedFrames.edgeType)
+            ) {
+              return {
+                ...piece,
+                x: selectedFrames.x,
+                y: selectedFrames.y,
+                isDragging: false,
+              };
+            } else {
+              return {
+                ...piece,
+                y:
+                  indexRowSelectedFrame < 6
+                    ? selectedFrames.y - indexRowSelectedFrame * WIDTH_TILE - NUMBER_COLUMNS
+                    : selectedFrames.y +
+                      (NUMBER_ROWS - indexRowSelectedFrame + 1) * WIDTH_TILE +
+                      NUMBER_COLUMNS,
+                x: selectedFrames.x,
+                isDragging: false,
+              };
+            }
+          }
+          return { ...piece, isDragging: false };
+        }),
+      );
+
+      setFrames(
+        frames.map((item) => ({
+          ...item,
+          strokeColor: 'black',
+          strokeWidth: 0.5,
+        })),
+      );
+    }
   };
 
   const handleMoveOverFrames = (x: number, y: number) => {
     setFrames(
       frames.map((frame) => {
         if (
-          frame.x < x &&
-          x < frame.x + 50 &&
-          frame.y < y &&
-          y < frame.y + 50
+          Math.abs(frame.x - x) < 25 &&
+          Math.abs(frame.y - y) < 25 // tinh gia tri width overlap va height overlap deu phai > 25
         ) {
           return {
             ...frame,
             strokeColor: 'red',
-            strokeWidth: 2,
+            strokeWidth: 3,
           };
         }
         return {
           ...frame,
           strokeColor: 'black',
-          strokeWidth: 1,
+          strokeWidth: 0.5,
         };
       }),
     );
   };
 
   const handleDragMove = (e: any) => {
-    // console.log('fasd', e.target.getAbsoluteTransform());
-    const { clientX, clientY } = e.evt;
+    const { x, y } = e.target.attrs;
     if (e.target.getType() === 'Stage')
       setZoom({
         ...zoom,
@@ -120,7 +156,7 @@ const Screen: React.FC = () => {
       }),
     );
 
-    handleMoveOverFrames(clientX, clientY);
+    if (e.target.getType() !== 'Stage') handleMoveOverFrames(x, y);
 
     handleUpdateSizeMiniMap();
   };
@@ -144,10 +180,37 @@ const Screen: React.FC = () => {
     }
   };
 
+  const handleZoom = (value: string) => {
+    let newScale = 0;
+    if (value === 'out') {
+      newScale = Math.min(board.stageScale + 0.25, 5);
+    } else if (value === 'in') {
+      newScale = Math.max(board.stageScale - 0.25, 0.25);
+    } else {
+      newScale = 1;
+    }
+
+    const oldScale = board.stageScale;
+
+    const mousePointTo = {
+      x: window.innerWidth / 2 / oldScale - board.stageX / oldScale,
+      y: window.innerHeight / 2 / oldScale - board.stageY / oldScale,
+    };
+
+    const newBoard = {
+      ...board,
+      stageScale: newScale,
+      stageX: -(mousePointTo.x - window.innerWidth / 2 / newScale) * newScale,
+      stageY: -(mousePointTo.y - window.innerHeight / 2 / newScale) * newScale,
+    };
+
+    setBoard(newBoard);
+  };
+
   const handleWheel = (e: any) => {
     e.evt.preventDefault();
 
-    const scaleBy = 1.3;
+    const scaleBy = 1.25;
     const stage = e.target.getStage();
     const oldScale = stage.scaleX();
     const mousePointTo = {
@@ -157,8 +220,8 @@ const Screen: React.FC = () => {
 
     const newScale =
       e.evt.deltaY > 0
-        ? Math.min(oldScale * scaleBy, 10) // zoom out
-        : Math.max(oldScale / scaleBy, 0.3);
+        ? Math.min(oldScale * scaleBy, 5) // zoom out
+        : Math.max(oldScale / scaleBy, 0.25);
 
     const newBoard = {
       ...board,
@@ -169,7 +232,7 @@ const Screen: React.FC = () => {
         -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
     };
 
-    stage.scale({ x: newScale, y: newScale });
+    // stage.scale({ x: newScale, y: newScale });
 
     setBoard(newBoard);
 
@@ -190,6 +253,7 @@ const Screen: React.FC = () => {
   };
 
   const handleClickZoom = (e: any) => {
+    if (zoom.hidden) return setZoom({ ...zoom, hidden: false });
     if (e.target.getType() === 'Stage') {
       setBoard((prevState) => ({
         ...prevState,
@@ -227,6 +291,7 @@ const Screen: React.FC = () => {
         handleClickZoom={handleClickZoom}
         zoom={zoom}
         handleDragMoveZoom={handleDragMoveZoom}
+        handleZoom={handleZoom}
       />
     </div>
   );

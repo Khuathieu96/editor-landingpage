@@ -7,9 +7,13 @@ import {
 } from '@ant-design/icons';
 import { Tooltip, Divider, Row, Col, Button } from 'antd';
 
-interface Props {}
+interface Props {
+  handlePinMiniMap: () => void;
+  stageScale: number;
+  handleZoom: (value: string) => void;
+}
 
-const MiniBar = ({}: Props) => {
+const MiniBar = ({ stageScale, handlePinMiniMap, handleZoom }: Props) => {
   return (
     <Row>
       <Col span={4}>
@@ -17,6 +21,7 @@ const MiniBar = ({}: Props) => {
           <Button
             type='text'
             // color='primary'
+            onClick={handlePinMiniMap}
             icon={<PushpinOutlined />}
           />
         </Tooltip>
@@ -33,19 +38,23 @@ const MiniBar = ({}: Props) => {
       <Divider type='vertical' style={{ height: 'auto' }} />
 
       <Col span={4}>
-        <Tooltip title='Zoom out'>
+        <Tooltip title='Zoom in'>
           <Button
             type='text'
             // color='primary'
+
+            onClick={() => handleZoom('in')}
             icon={<MinusOutlined />}
           />
         </Tooltip>
       </Col>
       <Col span={4}>
-        <Tooltip title='Zoom in'>
+        <Tooltip title='Zoom out'>
           <Button
             type='text'
             // color='primary'
+
+            onClick={() => handleZoom('out')}
             icon={<PlusOutlined />}
           />
         </Tooltip>
@@ -54,9 +63,10 @@ const MiniBar = ({}: Props) => {
         <Tooltip title='Zoom to 100%'>
           <Button
             type='text'
+            onClick={() => handleZoom('100')}
             // color='primary'
           >
-            100%
+            {Math.floor(stageScale * 100)}%
           </Button>
         </Tooltip>
       </Col>
