@@ -8,10 +8,16 @@ import { generateShapes } from '../../utils/screen';
 
 const INITIAL_STATE = generateShapes();
 const INITIAL_FRAMES = generateFrame();
+const framesLocalStorage = localStorage.getItem('frames');
+const piecesLocalStorage = localStorage.getItem('pieces');
 
 const Screen: React.FC = () => {
-  const [pieces, setPieces] = useState<PieceType[]>(INITIAL_STATE);
-  const [frames, setFrames] = useState<Frame[]>(INITIAL_FRAMES);
+  const [pieces, setPieces] = useState<PieceType[]>(
+    (piecesLocalStorage && JSON.parse(piecesLocalStorage)) || INITIAL_STATE,
+  );
+  const [frames, setFrames] = useState<Frame[]>(
+    (framesLocalStorage && JSON.parse(framesLocalStorage)) || INITIAL_FRAMES,
+  );
   const [board, setBoard] = useState({
     stageScale: 1,
     stageX: 0,
@@ -89,7 +95,9 @@ const Screen: React.FC = () => {
                 ...piece,
                 y:
                   indexRowSelectedFrame < 6
-                    ? selectedFrames.y - indexRowSelectedFrame * WIDTH_TILE - NUMBER_COLUMNS
+                    ? selectedFrames.y -
+                      indexRowSelectedFrame * WIDTH_TILE -
+                      NUMBER_COLUMNS
                     : selectedFrames.y +
                       (NUMBER_ROWS - indexRowSelectedFrame + 1) * WIDTH_TILE +
                       NUMBER_COLUMNS,

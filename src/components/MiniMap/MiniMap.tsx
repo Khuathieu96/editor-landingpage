@@ -118,6 +118,10 @@ const MiniMap = ({
         <MiniBar
           stageScale={stageScale}
           handlePinMiniMap={() => setPinMiniMap((prevState) => !prevState)}
+          handleSave={() => {
+            localStorage.setItem('frames', JSON.stringify(frames));
+            localStorage.setItem('pieces', JSON.stringify(pieces));
+          }}
           handleZoom={handleZoom}
         />
       </div>

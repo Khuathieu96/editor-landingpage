@@ -3,6 +3,7 @@ import {
   PlusOutlined,
   PushpinOutlined,
   ColumnWidthOutlined,
+  SaveOutlined,
   MinusOutlined,
 } from '@ant-design/icons';
 import { Tooltip, Divider, Row, Col, Button } from 'antd';
@@ -11,9 +12,15 @@ interface Props {
   handlePinMiniMap: () => void;
   stageScale: number;
   handleZoom: (value: string) => void;
+  handleSave: () => void;
 }
 
-const MiniBar = ({ stageScale, handlePinMiniMap, handleZoom }: Props) => {
+const MiniBar = ({
+  stageScale,
+  handleSave,
+  handlePinMiniMap,
+  handleZoom,
+}: Props) => {
   return (
     <Row>
       <Col span={4}>
@@ -27,11 +34,13 @@ const MiniBar = ({ stageScale, handlePinMiniMap, handleZoom }: Props) => {
         </Tooltip>
       </Col>
       <Col span={4}>
-        <Tooltip title='Fit to screen'>
+        <Tooltip title='Save'>
           <Button
             type='text'
             // color='primary'
-            icon={<ColumnWidthOutlined />}
+            // icon={<ColumnWidthOutlined />}
+            onClick={handleSave}
+            icon={<SaveOutlined />}
           />
         </Tooltip>
       </Col>
