@@ -4,8 +4,10 @@ import MiniMap from '../MiniMap';
 import { PieceType, Frame, zoomState } from '../../types/types';
 import { NUMBER_COLUMNS, WIDTH_TILE, NUMBER_ROWS } from '../../types/constants';
 import { generateFrame } from '../../utils/frames';
-import { generateShapes } from '../../utils/screen';
-
+import { checkPuzzleAnswers, generateShapes } from '../../utils/screen';
+import { Setting } from '../Setting';
+import { Dialog } from '../Dialog';
+import MusicBackground from '../MusicBackground';
 const INITIAL_STATE = generateShapes();
 const INITIAL_FRAMES = generateFrame();
 const framesLocalStorage = localStorage.getItem('frames');
@@ -18,6 +20,8 @@ const Screen: React.FC = () => {
   const [frames, setFrames] = useState<Frame[]>(
     (framesLocalStorage && JSON.parse(framesLocalStorage)) || INITIAL_FRAMES,
   );
+
+  const [isFinish, setIsFinish] = useState(false);
   const [board, setBoard] = useState({
     stageScale: 1,
     stageX: 0,
@@ -72,43 +76,43 @@ const Screen: React.FC = () => {
     const selectedFrames = frames.find(
       (frame) => Math.abs(frame.x - x) < 25 && Math.abs(frame.y - y) < 25,
     );
+
     const indexRowSelectedFrame = selectedFrames
       ? Math.floor(parseInt(selectedFrames.id, 10) / NUMBER_COLUMNS) + 1
       : 0;
 
     if (e.target.getType() !== 'Stage') {
-      setPieces(
-        pieces.map((piece) => {
-          if (selectedFrames && piece.id === id) {
-            if (
-              JSON.stringify(piece.edgeType) ===
-              JSON.stringify(selectedFrames.edgeType)
-            ) {
-              return {
-                ...piece,
-                x: selectedFrames.x,
-                y: selectedFrames.y,
-                isDragging: false,
-              };
-            } else {
-              return {
-                ...piece,
-                y:
-                  indexRowSelectedFrame < 6
-                    ? selectedFrames.y -
-                      indexRowSelectedFrame * WIDTH_TILE -
-                      NUMBER_COLUMNS
-                    : selectedFrames.y +
-                      (NUMBER_ROWS - indexRowSelectedFrame + 1) * WIDTH_TILE +
-                      NUMBER_COLUMNS,
-                x: selectedFrames.x,
-                isDragging: false,
-              };
-            }
+      const newPiece = pieces.map((piece) => {
+        if (selectedFrames && piece.id === id) {
+          if (
+            JSON.stringify(piece.edgeType) ===
+            JSON.stringify(selectedFrames.edgeType)
+          ) {
+            return {
+              ...piece,
+              x: selectedFrames.x,
+              y: selectedFrames.y,
+              isDragging: false,
+            };
+          } else {
+            return {
+              ...piece,
+              y:
+                indexRowSelectedFrame < 6
+                  ? selectedFrames.y -
+                    indexRowSelectedFrame * WIDTH_TILE -
+                    NUMBER_COLUMNS
+                  : selectedFrames.y +
+                    (NUMBER_ROWS - indexRowSelectedFrame + 1) * WIDTH_TILE +
+                    NUMBER_COLUMNS,
+              x: selectedFrames.x,
+              isDragging: false,
+            };
           }
-          return { ...piece, isDragging: false };
-        }),
-      );
+        }
+        return { ...piece, isDragging: false };
+      });
+      setPieces(newPiece);
 
       setFrames(
         frames.map((item) => ({
@@ -117,6 +121,10 @@ const Screen: React.FC = () => {
           strokeWidth: 0.5,
         })),
       );
+
+      if (selectedFrames) {
+        if (checkPuzzleAnswers(newPiece, frames)) setIsFinish(true);
+      }
     }
   };
 
@@ -301,6 +309,19 @@ const Screen: React.FC = () => {
         handleDragMoveZoom={handleDragMoveZoom}
         handleZoom={handleZoom}
       />
+
+      <Setting />
+
+      <Dialog
+        title='Congratulation'
+        handleOk={() => {
+          setIsFinish(false);
+        }}
+        handleCancel={() => setIsFinish(false)}
+        visible={isFinish}
+        content={<div>You win!!!!</div>}
+      />
+      <MusicBackground />
     </div>
   );
 };

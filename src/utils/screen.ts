@@ -1,4 +1,5 @@
 import { NUMBER_TILES, NUMBER_COLUMNS, NUMBER_ROWS, WIDTH_FRAMES, HEIGHT_FRAMES, WIDTH_TILE } from "../types/constants"
+import { Frame, PieceType } from "../types/types"
 import { calculateEdgeType } from "./frames"
 
 const horizontalSpace = (window.innerWidth - WIDTH_FRAMES) / 2
@@ -54,3 +55,19 @@ export const generateShapes = () => {
     })
   });
 }
+
+const arrayToObject = (pieces: any[]) =>
+  pieces.reduce((acc, cur) => {
+    const key = parseInt(cur.id, 10) + cur.x + cur.y
+    acc[key] = key
+    return acc
+  }, {})
+
+
+const objectToString = (object: object) => JSON.stringify(object)
+
+export const checkPuzzleAnswers = (pieces: PieceType[], frames: Frame[]) =>
+  objectToString(arrayToObject(pieces)) === objectToString(arrayToObject(frames))
+
+
+
