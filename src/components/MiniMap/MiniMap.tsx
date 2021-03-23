@@ -66,9 +66,9 @@ const MiniMap = ({
               height={miniBoard.height}
               scaleX={miniBoard.miniBoardScale}
               scaleY={miniBoard.miniBoardScale}
-              draggable={true}
+              listening={false}
             >
-              <Layer>
+              <Layer listening={false}>
                 <Frames
                   frames={frames.map((item) => ({
                     ...item,
@@ -76,6 +76,8 @@ const MiniMap = ({
                     y: item.y - minStarY,
                   }))}
                 />
+              </Layer>
+              <Layer listening={false}>
                 <Pieces
                   pieces={pieces.map((item) => ({
                     ...item,
@@ -90,13 +92,16 @@ const MiniMap = ({
           </div>
 
           <Stage
+            perfectDrawEnabled={false}
             style={{ position: 'absolute', top: 0, left: 0 }}
             width={300}
             height={150}
             onClick={handleClickZoom}
+            transformsEnabled={'position'}
           >
-            <Layer>
+            <Layer perfectDrawEnabled={false}>
               <Rect
+                perfectDrawEnabled={false}
                 {...zoom}
                 width={
                   (window.innerWidth * miniBoard.miniBoardScale) / stageScale

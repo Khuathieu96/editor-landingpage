@@ -18,13 +18,13 @@ const Frames = ({ frames }: FrameProps) => {
     <>
       {status === 'loaded' &&
         frames.map((frame, index) => {
-          const indexCol = Math.floor(index % 20);
-          const indexRow = Math.floor(index / 20);
-
           const xImage = frame.x - frames[0].x;
           const yImage = frame.y - frames[0].y;
           return (
             <Group
+              perfectDrawEnabled={false}
+              transformsEnabled={'position'}
+              listening={false}
               key={frame.id}
               x={frame.x}
               width={WIDTH_TILE}
@@ -40,6 +40,8 @@ const Frames = ({ frames }: FrameProps) => {
               }}
             >
               <Image
+                perfectDrawEnabled={false}
+                listening={false}
                 x={-10}
                 y={-10}
                 crop={{
@@ -54,9 +56,10 @@ const Frames = ({ frames }: FrameProps) => {
                 opacity={0.3}
               />
               <Shape
+                perfectDrawEnabled={false}
+                listening={false}
                 key={frame.id}
                 id={frame.id}
-           
                 sceneFunc={(context, shape) => {
                   const widthTile = WIDTH_TILE / 3;
                   context.beginPath();

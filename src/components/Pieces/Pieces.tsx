@@ -24,10 +24,10 @@ const Pieces = ({ pieces, handleDragStart, handleDragEnd }: PieceProps) => {
 
           const xImage = indexCol * 50;
           const yImage = indexRow * 50;
-          // const xImage = piece.x - pieces[0].x;
-          // const yImage = piece.y - pieces[0].y;
           return (
             <Group
+              perfectDrawEnabled={false}
+              transformsEnabled={'position'}
               key={piece.id}
               x={piece.x}
               width={WIDTH_TILE}
@@ -50,6 +50,8 @@ const Pieces = ({ pieces, handleDragStart, handleDragEnd }: PieceProps) => {
               onDragEnd={handleDragEnd}
             >
               <Image
+                perfectDrawEnabled={false}
+                // listening={false}
                 x={-10}
                 y={-10}
                 crop={{
@@ -63,6 +65,8 @@ const Pieces = ({ pieces, handleDragStart, handleDragEnd }: PieceProps) => {
                 image={image}
               />
               <Shape
+                perfectDrawEnabled={false}
+                listening={false}
                 key={piece.id}
                 id={piece.id}
                 sceneFunc={(context, shape) => {

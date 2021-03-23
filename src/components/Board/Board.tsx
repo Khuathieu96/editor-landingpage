@@ -50,9 +50,10 @@ const Board = ({
       onDragMove={handleDragMove}
       // onDragEnd={onDragEndStage}
     >
-      <Layer ref={inputEl}>
+      <Layer listening={false} transformsEnabled={'position'}>
         <Frames frames={frames} />
-
+      </Layer>
+      <Layer ref={inputEl} transformsEnabled={'position'}>
         <Pieces
           pieces={pieces}
           handleDragStart={handleDragStart}
