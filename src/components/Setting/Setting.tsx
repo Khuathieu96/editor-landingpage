@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
 import { Button, InputNumber, Row, Col, Typography } from 'antd';
 import { Dialog } from '../Dialog';
+import { observer } from 'mobx-react-lite';
+import { GameSettingContext } from '../../context/GameContext/GameContext';
+import { UploadImage } from './components';
 
-interface Props {}
-
-const Setting = ({}: Props) => {
+const Setting = observer(() => {
   const [visible, setVisible] = useState(false);
   const { Title } = Typography;
+  const gameSettingStore = useContext(GameSettingContext);
+
   return (
     <div style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 1 }}>
       <Button
@@ -26,41 +29,79 @@ const Setting = ({}: Props) => {
             <Row gutter={[8, 16]}>
               <Col span={12}>
                 <Title level={5}>WIDTH_TILE</Title>
-                <InputNumber defaultValue={50} />
+                <InputNumber
+                  defaultValue={gameSettingStore.WIDTH_TILE}
+                  onChange={(e) => {
+                    gameSettingStore.setWidthTitle(e);
+                  }}
+                />
               </Col>
 
               <Col span={12}>
                 <Title level={5}>WIDTH_FRAMES</Title>
-                <InputNumber defaultValue={1000} />
+                <InputNumber
+                  defaultValue={gameSettingStore.WIDTH_FRAMES}
+                  onChange={(e) => {
+                    gameSettingStore.setWidthFrames(e);
+                  }}
+                />
               </Col>
             </Row>
             <Row gutter={[8, 16]}>
               <Col span={12}>
                 <Title level={5}>HEIGHT_FRAMES</Title>
-                <InputNumber defaultValue={500} />
+                <InputNumber
+                  defaultValue={gameSettingStore.HEIGHT_FRAMES}
+                  onChange={(e) => {
+                    gameSettingStore.setHeightFrames(e);
+                  }}
+                />
               </Col>
 
               <Col span={12}>
                 <Title level={5}>NUMBER_TILES</Title>
-                <InputNumber defaultValue={200} />
+                <InputNumber
+                  defaultValue={gameSettingStore.NUMBER_TILES}
+                  onChange={(e) => {
+                    gameSettingStore.setNumberTiles(e);
+                  }}
+                />
               </Col>
             </Row>
             <Row gutter={[8, 16]}>
               <Col span={12}>
                 <Title level={5}>NUMBER_COLUMNS</Title>
-                <InputNumber defaultValue={20} />
+                <InputNumber
+                  defaultValue={gameSettingStore.NUMBER_COLUMNS}
+                  onChange={(e) => {
+                    gameSettingStore.setNumberColumn(e);
+                  }}
+                />
               </Col>
 
               <Col span={12}>
                 <Title level={5}>NUMBER_ROWS</Title>
-                <InputNumber defaultValue={10} />
+                <InputNumber
+                  defaultValue={gameSettingStore.NUMBER_ROWS}
+                  onChange={(e) => {
+                    gameSettingStore.setNumberRows(e);
+                  }}
+                />
               </Col>
+            </Row>
+            <Row gutter={[8, 16]}>
+              <UploadImage
+                handleOnChange={(value: string) =>
+                  gameSettingStore.setImageUrl(value)
+                }
+                imageDefault={gameSettingStore.IMAGE_URL}
+              />
             </Row>
           </>
         }
       />
     </div>
   );
-};
+});
 
 export default Setting;

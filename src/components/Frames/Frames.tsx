@@ -1,6 +1,8 @@
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Group, Shape, Image } from 'react-konva';
 import useImage from 'use-image';
+import { useStores } from '../../store/useStore';
 import { WIDTH_TILE } from '../../types/constants';
 import { Frame } from '../../types/types';
 import { renderTiles } from '../../utils/frames';
@@ -9,10 +11,9 @@ type FrameProps = {
   frames: Frame[];
 };
 
-const Frames = ({ frames }: FrameProps) => {
-  const [image, status] = useImage(
-    'https://www.commercialintegrator.com/wp-content/uploads/2020/04/EUjK4szU0AEn88O-1.jpg',
-  );
+const Frames = observer(({ frames }: FrameProps) => {
+  const gameSettingStore = useStores();
+  const [image, status] = useImage(gameSettingStore.IMAGE_URL);
 
   return (
     <>
@@ -77,6 +78,6 @@ const Frames = ({ frames }: FrameProps) => {
         })}
     </>
   );
-};
+});
 
 export default Frames;

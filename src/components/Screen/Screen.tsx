@@ -8,6 +8,7 @@ import { checkPuzzleAnswers, generateShapes } from '../../utils/screen';
 import { Setting } from '../Setting';
 import { Dialog } from '../Dialog';
 import MusicBackground from '../MusicBackground';
+
 const INITIAL_STATE = generateShapes();
 const INITIAL_FRAMES = generateFrame();
 const framesLocalStorage = localStorage.getItem('frames');
