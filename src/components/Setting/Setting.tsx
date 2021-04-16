@@ -5,11 +5,13 @@ import { Dialog } from '../Dialog';
 import { observer } from 'mobx-react-lite';
 import { GameSettingContext } from '../../context/GameContext/GameContext';
 import { UploadImage } from './components';
+import { storeGamesList } from '../../store/store';
+import { StatusGameType } from '../../types/types';
+import { v4 as uuidv4 } from 'uuid';
 
-const Setting = observer(() => {
+const Setting = observer((props) => {
   const [visible, setVisible] = useState(false);
   const { Title } = Typography;
-  const gameSettingStore = useContext(GameSettingContext);
 
   return (
     <div style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 1 }}>
@@ -26,7 +28,8 @@ const Setting = observer(() => {
         handleCancel={() => setVisible(false)}
         content={
           <>
-            <Row gutter={[8, 16]}>
+            Setting
+            {/* <Row gutter={[8, 16]}>
               <Col span={12}>
                 <Title level={5}>WIDTH_TILE</Title>
                 <InputNumber
@@ -97,6 +100,7 @@ const Setting = observer(() => {
                 imageDefault={gameSettingStore.IMAGE_URL}
               />
             </Row>
+           */}
           </>
         }
       />

@@ -1,5 +1,6 @@
 import React, { ReactChild, useContext } from 'react';
 import AppContextProvider from './AppContext';
+import GameContextProvider from './GameContext';
 // import { AppContext } from 'src/context';
 
 // const NeedAppContext = (props) => {
@@ -49,7 +50,8 @@ const ContextProvider = (props: PropsContextProvide) => {
     <AppContextProvider>
       {/* <TopbarContextProvider> */}
       {/* <ApolloProvider> */}
-      {children}
+      <GameContextProvider>{children}</GameContextProvider>
+
       {/* </ApolloProvider> */}
       {/* </TopbarContextProvider> */}
     </AppContextProvider>

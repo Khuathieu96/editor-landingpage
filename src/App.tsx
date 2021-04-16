@@ -1,25 +1,29 @@
 import React from 'react';
 import './App.css';
-import Screen from './components/Screen';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import { About } from './views/About';
-import { Dashboard } from './views/Dashboard';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import routes from './views/Router/routes';
 
 function App() {
-  // return <Screen />;
-
   return (
     <Router>
       <Switch>
-        <Route path='/about'>
-          <About />
-        </Route>
-        <Route path='/game'>
-          <Screen />
-        </Route>
-        <Route path='/'>
-          <Dashboard />
-        </Route>
+        {routes.map((route, index) => (
+          <Route
+            exact
+            key={index}
+            path={route.path}
+            render={(props) => {
+              const Layout = route.layout;
+              const Component = route.component;
+              return (
+                <Layout>
+                  <Component />
+                </Layout>
+              );
+            }}
+          />
+        ))}
       </Switch>
     </Router>
   );

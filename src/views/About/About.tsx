@@ -2,6 +2,8 @@ import React from 'react';
 
 interface Props {}
 
-export default ({}: Props) => {
-  return <>about</>;
+const About = ({}: Props) => {
+  return <>Hello, my name is Ceuli!</>;
 };
+
+export default About;

@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Shape, Group, Image } from 'react-konva';
 import useImage from 'use-image';
-import { useStores } from '../../store/useStore';
+// import { useStores } from '../../store/useStore';
 import { WIDTH_TILE } from '../../types/constants';
 import { PieceType } from '../../types/types';
 import { renderTiles } from '../../utils/frames';
@@ -15,12 +15,12 @@ type PieceProps = {
 
 const Pieces = observer(
   ({ pieces, handleDragStart, handleDragEnd }: PieceProps) => {
-    const gameSettingStore = useStores();
-    const [image, status] = useImage(gameSettingStore.IMAGE_URL);
+    // const gameSettingStore = useStores();
+    // const [image, status] = useImage(gameSettingStore.IMAGE_URL);
 
     return (
       <>
-        {status === 'loaded' &&
+        {false &&
           pieces.map((piece, index) => {
             const indexCol = Math.floor(parseInt(piece.id, 10) % 20);
             const indexRow = Math.floor(parseInt(piece.id, 10) / 20);
@@ -52,7 +52,7 @@ const Pieces = observer(
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
               >
-                <Image
+                {/* <Image
                   perfectDrawEnabled={false}
                   // listening={false}
                   x={-10}
@@ -66,7 +66,7 @@ const Pieces = observer(
                   width={70}
                   height={70}
                   image={image}
-                />
+                /> */}
                 <Shape
                   perfectDrawEnabled={false}
                   listening={false}

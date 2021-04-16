@@ -1,21 +1,21 @@
 import React, { createContext, ReactChild, useContext } from 'react';
-import { storeGameSetting } from '../../store/store';
+import { storeGamesList } from '../../store/store';
 
 interface GameContextProps {
   children: ReactChild;
 }
 
-const GameSettingContext = createContext(storeGameSetting);
+const GameSettingContext = createContext(storeGamesList);
 
-const GameContext = (props: GameContextProps) => {
+const GameContextProvider = (props: GameContextProps) => {
   // const [state, dispatch] = useReducer(mainReducer, initialState);
 
   return (
-    <GameSettingContext.Provider value={storeGameSetting}>
+    <GameSettingContext.Provider value={storeGamesList}>
       {props.children}
     </GameSettingContext.Provider>
   );
 };
-export default GameContext;
+export default GameContextProvider;
 
 export { GameSettingContext };

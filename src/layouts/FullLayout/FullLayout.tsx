@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { ReactChild } from 'react';
 
 interface Props {
+  children: ReactChild;
 }
 
-export default ({ }: Props) => {
-  return <></>;
-}
+const FullLayout = ({ children }: Props) => {
+  return <>{children}</>;
+};
+
+export default FullLayout;

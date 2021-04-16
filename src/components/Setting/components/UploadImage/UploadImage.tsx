@@ -35,15 +35,6 @@ const UploadImage = ({ imageDefault, handleOnChange }: Props) => {
         canvas.width = scaleWidth;
         canvas.height = scaleHeight;
 
-        console.log(
-          'widthReal, heightReal',
-          img.width,
-          img.height,
-          maxScale,
-          scaleWidth,
-          scaleHeight,
-        );
-
         if (img.width > rangeWidth[0] && img.width < rangeWidth[1]) {
         }
 

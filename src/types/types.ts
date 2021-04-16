@@ -35,3 +35,8 @@ export type zoomState = {
   hidden: boolean;
 };
 
+export enum StatusGameType {
+  NEW = "new",
+  FINISHED = 'finished',
+  UNFINISHED = 'unfinished',
+}
