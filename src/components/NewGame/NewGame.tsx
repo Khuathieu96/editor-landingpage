@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { useStores } from '../../store/useStore';
 import { Dialog } from '../Dialog';
-import { StatusGameType } from '../../types/types';
+import { ImageType, StatusGameType } from '../../types/types';
 import { v4 as uuidv4 } from 'uuid';
 import { Col, Input, InputNumber, Row, Typography } from 'antd';
 import { UploadImage } from '../Setting/components';
@@ -16,7 +16,7 @@ const initNewGame = () => {
     cols: 5,
     rows: 5,
     id,
-    url: '',
+    image: { url: '', width: 0, height: 0 },
     name: 'New Game',
     status: StatusGameType.NEW,
     dataGrid: { x: 0, y: 0, h: 2, w: 2, i: id },
@@ -30,7 +30,7 @@ const NewGame = observer(({}: Props) => {
   const [newGame, setNewGame] = useState<GameType>(initNewGame());
 
   const handleAddNewGame = () => {
-    if (newGame.url) {
+    if (newGame.image.url) {
       store.addNewGame(newGame);
       handleClose();
     } else alert('wrong input');
@@ -41,8 +41,39 @@ const NewGame = observer(({}: Props) => {
     setNewGame(initNewGame());
   };
 
-  const handleCreateNewGame = (key: string, value: number | string) => {
+  const handleCreateNewGame = (
+    key: string,
+    value: ImageType | number | string,
+  ) => {
     setNewGame((prev) => ({ ...prev, [key]: value }));
+  };
+  const handleImage = (value: ImageType) => {
+    const mincale = Math.max(
+      1,
+      value.width / window.innerWidth,
+      value.height / window.innerHeight,
+    );
+    const wNew = value.width / mincale;
+    const hNew = value.height / mincale;
+
+    console.log('asdd', wNew, hNew, mincale);
+    console.log(
+      'asdd',
+      Math.round((wNew / window.innerWidth) * 12),
+      Math.round((hNew / window.innerHeight) * 22),
+    );
+
+    setNewGame((prev) => ({
+      ...prev,
+      image: value,
+      dataGrid: {
+        ...prev.dataGrid,
+        x: (store.games.length * 2) % 12,
+        y: Infinity,
+        w: Math.round((wNew / window.innerWidth) * 12),
+        h: Math.round((hNew / window.innerHeight) * 22),
+      },
+    }));
   };
 
   return (
@@ -91,10 +122,8 @@ const NewGame = observer(({}: Props) => {
                 </Col>
                 <Col span={12}>
                   <UploadImage
-                    handleOnChange={(value: string) =>
-                      handleCreateNewGame('url', value)
-                    }
-                    imageDefault={newGame.url}
+                    handleOnChange={(value: ImageType) => handleImage(value)}
+                    imageDefault={newGame.image.url}
                   />
                 </Col>
               </Row>

@@ -40,3 +40,10 @@ export enum StatusGameType {
   FINISHED = 'finished',
   UNFINISHED = 'unfinished',
 }
+
+
+export interface ImageType {
+  url: string
+  width: number
+  height: number
+}

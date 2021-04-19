@@ -7,13 +7,30 @@ import { useHistory } from 'react-router';
 
 const ReactGridLayout = WidthProvider(RGL);
 
-const generateDOM = (games: any) => {
-  return;
+const GenerateDOM = ({ game }: any) => {
+  let history = useHistory();
+  return (
+    <div
+      style={{
+        backgroundImage: `url("${game.image.url}")`,
+        backgroundPosition: 'center',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        height: '100%',
+      }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        history.push(`/game/${game.id}`);
+      }}
+    >
+      <div className='text'>{game.name}</div>
+    </div>
+  );
 };
 
 const Games = observer(() => {
   const store = useStores();
-  let history = useHistory();
 
   return (
     <ReactGridLayout
@@ -22,22 +39,36 @@ const Games = observer(() => {
       width={1200}
       rowHeight={30}
       isBounded={true}
-      onDragStop={(layout, oldItem, newItem) => {
-        console.log('dragstop', layout, oldItem, newItem);
+      onDragStop={(layout, oldItem, newItem, _, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('dragstop', e);
       }}
       // onLayoutChange={(layout) => {
       //   console.log('layout', layout);
       // }}
     >
       {store.games.map((game: any, i: number) => (
-        <div
-          key={game.id}
-          data-grid={game.dataGrid}
-          onClick={() => history.push(`/game/${game.id}`)}
-        >
-          <span className='text'>{game.name}</span>
+        <div key={game.id} data-grid={game.dataGrid}>
+          <GenerateDOM game={game} key={game.id} />{' '}
         </div>
       ))}
+
+      {/* {store.games.map((game: any, i: number) => (
+       
+          <div
+            className='text'
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('onclick');
+              // history.push(`/game/${game.id}`);
+            }}
+          >
+            {game.name}
+        
+        </div>
+      ))} */}
     </ReactGridLayout>
   );
 });

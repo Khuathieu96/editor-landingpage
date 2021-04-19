@@ -1,16 +1,17 @@
 import { makeObservable, observable, action, computed } from "mobx"
-import { StatusGameType } from "../types/types"
+import { ImageType, StatusGameType } from "../types/types"
 
 
 export type GameType = {
   cols: number
   rows: number
-  url: string
+  image: ImageType
   name: string
   id: string
   status: StatusGameType
   dataGrid: DataGridType
 }
+
 
 type DataGridType = {
   x: number
@@ -29,16 +30,16 @@ class Game {
   cols = 0
   rows = 0
   name = ''
-  url = ''
+  image = { url: '', width: 0, height: 0, }
   id = ''
   dataGrid = { x: 0, y: 0, w: 1, h: 1, i: '' }
   status = StatusGameType.NEW
 
-  constructor(cols: number, rows: number, id: string, url: string, name: string, status: StatusGameType, dataGrid: DataGridType) {
+  constructor(cols: number, rows: number, id: string, image: ImageType, name: string, status: StatusGameType, dataGrid: DataGridType) {
     makeObservable(this, {
       cols: observable,
       rows: observable,
-      url: observable,
+      image: observable,
       status: observable,
       dataGrid: observable,
       // setUrl: action,
@@ -49,7 +50,7 @@ class Game {
     this.cols = cols
     this.id = id
     this.rows = rows
-    this.url = url
+    this.image = image
     this.name = name
     this.status = status
     this.dataGrid = dataGrid
@@ -99,8 +100,8 @@ class Games {
     this.games = games
   }
 
-  addNewGame({ cols, rows, id, url, name, status, dataGrid }: GameType) {
-    const newTodo = new Game(cols, rows, id, url, name, status, dataGrid)
+  addNewGame({ cols, rows, id, image, name, status, dataGrid }: GameType) {
+    const newTodo = new Game(cols, rows, id, image, name, status, dataGrid)
     this.games = [...this.games, newTodo]
 
   }

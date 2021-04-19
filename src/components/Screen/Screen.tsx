@@ -8,13 +8,23 @@ import { checkPuzzleAnswers, generateShapes } from '../../utils/screen';
 import { Setting } from '../Setting';
 import { Dialog } from '../Dialog';
 import MusicBackground from '../MusicBackground';
+import { useStores } from '../../store/useStore';
+import { observer } from 'mobx-react-lite';
 
 const INITIAL_STATE = generateShapes();
 const INITIAL_FRAMES = generateFrame();
 const framesLocalStorage = localStorage.getItem('frames');
 const piecesLocalStorage = localStorage.getItem('pieces');
 
-const Screen: React.FC = () => {
+interface ScreenType {
+  id: string;
+}
+
+const Screen = observer(({ id }: ScreenType) => {
+  const store = useStores();
+  const game = store.getGame(id);
+  console.log('game1', id, game);
+
   const [pieces, setPieces] = useState<PieceType[]>(
     (piecesLocalStorage && JSON.parse(piecesLocalStorage)) || INITIAL_STATE,
   );
@@ -325,6 +335,6 @@ const Screen: React.FC = () => {
       <MusicBackground />
     </div>
   );
-};
+});
 
 export default Screen;

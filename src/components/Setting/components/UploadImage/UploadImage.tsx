@@ -1,10 +1,11 @@
 import { Upload } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { RcFile } from 'antd/lib/upload';
+import { ImageType } from '../../../../types/types';
 
 interface Props {
-  handleOnChange: (value: string) => void;
+  handleOnChange: (value: ImageType) => void;
   imageDefault: string;
 }
 
@@ -16,7 +17,7 @@ const UploadImage = ({ imageDefault, handleOnChange }: Props) => {
     rangeWidth: number[],
     rangeHeight: number[],
   ) {
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<ImageType>((resolve, reject) => {
       let img = document.createElement('img');
       img.src = objectUrl;
       var canvas = document.createElement('canvas');
@@ -35,9 +36,6 @@ const UploadImage = ({ imageDefault, handleOnChange }: Props) => {
         canvas.width = scaleWidth;
         canvas.height = scaleHeight;
 
-        if (img.width > rangeWidth[0] && img.width < rangeWidth[1]) {
-        }
-
         if (context) {
           context.scale(1 / maxScale, 1 / maxScale);
           context.drawImage(img, 0, 0);
@@ -48,7 +46,12 @@ const UploadImage = ({ imageDefault, handleOnChange }: Props) => {
                 type: 'image/png',
               });
               const objectUrlResize = URL.createObjectURL(fileResize);
-              resolve(objectUrlResize);
+
+              resolve({
+                url: objectUrlResize,
+                width: scaleWidth,
+                height: scaleHeight,
+              });
             }
           });
         }
@@ -63,7 +66,7 @@ const UploadImage = ({ imageDefault, handleOnChange }: Props) => {
     var objectUrl = URL.createObjectURL(file);
 
     resizeBase64Img(objectUrl, rangeWidth, rangeHeight).then((result) => {
-      setImageUrl(result);
+      setImageUrl(result.url);
       handleOnChange(result);
     });
     return false;
