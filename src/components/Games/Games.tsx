@@ -17,6 +17,8 @@ const GenerateDOM = ({ game }: any) => {
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         height: '100%',
+        width: '100%',
+        cursor: 'pointer',
       }}
       onClick={(e) => {
         e.preventDefault();

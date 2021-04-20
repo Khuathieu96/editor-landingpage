@@ -1,5 +1,7 @@
 import { makeObservable, observable, action, computed } from "mobx"
 import { ImageType, StatusGameType } from "../types/types"
+import { generateFrame } from "../utils/frames"
+import { generateShapes } from "../utils/screen"
 
 
 export type GameType = {
@@ -8,6 +10,8 @@ export type GameType = {
   image: ImageType
   name: string
   id: string
+  pieces: any[]
+  frames: any[]
   status: StatusGameType
   dataGrid: DataGridType
 }
@@ -27,13 +31,15 @@ type DataGridType = {
 }
 
 class Game {
-  cols = 0
-  rows = 0
-  name = ''
-  image = { url: '', width: 0, height: 0, }
-  id = ''
-  dataGrid = { x: 0, y: 0, w: 1, h: 1, i: '' }
-  status = StatusGameType.NEW
+  cols: number = 0
+  rows: number = 0
+  name: string = ''
+  image: ImageType = { url: '', width: 0, height: 0, }
+  id: string = ''
+  pieces: any[] = []
+  frames: any[] = []
+  dataGrid: DataGridType = { x: 0, y: 0, w: 1, h: 1, i: '' }
+  status: StatusGameType = StatusGameType.NEW
 
   constructor(cols: number, rows: number, id: string, image: ImageType, name: string, status: StatusGameType, dataGrid: DataGridType) {
     makeObservable(this, {
@@ -42,6 +48,8 @@ class Game {
       image: observable,
       status: observable,
       dataGrid: observable,
+      pieces: observable,
+      frames: observable,
       // setUrl: action,
       // setCols: action,
       // setRows: action,
@@ -54,6 +62,17 @@ class Game {
     this.name = name
     this.status = status
     this.dataGrid = dataGrid
+    this.pieces = generateShapes(
+      this.cols || 0,
+      this.rows || 0,
+    )
+    this.frames = generateFrame(
+      this.cols || 0,
+      this.rows || 0,
+      this.image.width || 0,
+      this.image.height || 0,
+    )
+
   }
 
   // setUrl(value: string) {
@@ -70,15 +89,28 @@ class Game {
   // }
 }
 
+const initialGame = {
+  cols: 0,
+  rows: 0,
+  name: '',
+  image: { url: '', width: 0, height: 0, },
+  id: '',
+  pieces: [],
+  frames: [],
+  dataGrid: { x: 0, y: 0, w: 1, h: 1, i: '' },
+  status: StatusGameType.NEW,
+}
+
 class Games {
   games: GameType[] = []
+  currentGame: GameType = initialGame
 
   get newGamesList() {
     return this.games.filter(game => game.status === StatusGameType.NEW)
   }
 
-  getGame(id: string) {
-    return this.games.find(item => item.id === id)
+  setCurrentGame(id: string) {
+    this.currentGame = this.games.find(item => item.id === id) || initialGame
   }
 
   get finishedGamesList() {
@@ -94,7 +126,7 @@ class Games {
       newGamesList: computed,
       finishedGamesList: computed,
       unfinishedGamesList: computed,
-      getGame: action,
+      setCurrentGame: action,
       addNewGame: action
     })
     this.games = games

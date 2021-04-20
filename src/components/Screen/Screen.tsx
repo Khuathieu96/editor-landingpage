@@ -11,26 +11,27 @@ import MusicBackground from '../MusicBackground';
 import { useStores } from '../../store/useStore';
 import { observer } from 'mobx-react-lite';
 
-const INITIAL_STATE = generateShapes();
-const INITIAL_FRAMES = generateFrame();
 const framesLocalStorage = localStorage.getItem('frames');
 const piecesLocalStorage = localStorage.getItem('pieces');
 
-interface ScreenType {
-  id: string;
-}
+interface ScreenType {}
 
-const Screen = observer(({ id }: ScreenType) => {
+const Screen = observer(() => {
   const store = useStores();
-  const game = store.getGame(id);
-  console.log('game1', id, game);
 
   const [pieces, setPieces] = useState<PieceType[]>(
-    (piecesLocalStorage && JSON.parse(piecesLocalStorage)) || INITIAL_STATE,
+    // (piecesLocalStorage && JSON.parse(piecesLocalStorage)) ||
+    store.currentGame?.pieces || [],
   );
   const [frames, setFrames] = useState<Frame[]>(
-    (framesLocalStorage && JSON.parse(framesLocalStorage)) || INITIAL_FRAMES,
+    // (framesLocalStorage && JSON.parse(framesLocalStorage)) ||
+    store.currentGame?.frames || [],
   );
+  console.log('pieceđs', pieces, frames);
+  useEffect(() => {
+    if (store.currentGame?.pieces) setPieces(store.currentGame?.pieces);
+    if (store.currentGame?.frames) setFrames(store.currentGame?.frames);
+  }, [store]);
 
   const [isFinish, setIsFinish] = useState(false);
   const [board, setBoard] = useState({
@@ -301,9 +302,11 @@ const Screen = observer(({ id }: ScreenType) => {
     <div style={{ position: 'relative', overflow: 'hidden' }}>
       <Board
         board={board}
+        // pieces={store.currentGame?.pieces || []}
+        // frames={store.currentGame?.frames || []}
+        handleWheel={handleWheel}
         pieces={pieces}
         frames={frames}
-        handleWheel={handleWheel}
         handleDragStart={handleDragStart}
         handleDragEnd={handleDragEnd}
         handleDragMove={handleDragMove}
@@ -312,9 +315,11 @@ const Screen = observer(({ id }: ScreenType) => {
       />
       <MiniMap
         stageScale={board.stageScale}
-        miniBoard={miniBoard}
         pieces={pieces}
         frames={frames}
+        miniBoard={miniBoard}
+        // pieces={store.currentGame?.pieces || []}
+        // frames={store.currentGame?.pieces || []}
         handleClickZoom={handleClickZoom}
         zoom={zoom}
         handleDragMoveZoom={handleDragMoveZoom}

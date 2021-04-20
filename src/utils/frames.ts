@@ -1,4 +1,4 @@
-import { HEIGHT_FRAMES, NUMBER_COLUMNS, NUMBER_ROWS, NUMBER_TILES, WIDTH_FRAMES, WIDTH_TILE } from "../types/constants";
+import { HEIGHT_FRAMES, WIDTH_FRAMES, WIDTH_TILE } from "../types/constants";
 import { EdgeType } from "../types/types";
 
 
@@ -105,16 +105,20 @@ export const calculateEdgeType = (colIndex: number, rowIndex: number) => {
 };
 
 
-export const generateFrame = () => {
-  return [...Array(NUMBER_TILES)].map((_, i) => {
+export const generateFrame = (cols: number, rows: number, width: number, height: number) => {
+  const tiles = cols * rows
+  const wTile = width / cols
+  const hTile = height / rows
+  
+  return [...Array(tiles)].map((_, i) => {
 
-    const colIndex = Math.floor(i % NUMBER_COLUMNS);
-    const rowIndex = Math.floor(i / NUMBER_COLUMNS);
+    const colIndex = Math.floor(i % cols);
+    const rowIndex = Math.floor(i / cols);
 
     return {
       id: i.toString() + "-frame",
-      x: (window.innerWidth - WIDTH_FRAMES) / 2 + WIDTH_TILE * Math.floor(i % NUMBER_COLUMNS),
-      y: (window.innerHeight - HEIGHT_FRAMES) / 2 + WIDTH_TILE * Math.floor(i / NUMBER_COLUMNS),
+      x: (window.innerWidth - width) / 2 + wTile * Math.floor(i % cols),
+      y: (window.innerHeight - height) / 2 + hTile * Math.floor(i / cols),
       draggable: false,
       fillColor: i % 3 === 0 ? '#84ce90' : i % 3 === 1 ? '#d5d690' : 'grey',
       isDragging: false,
@@ -123,9 +127,9 @@ export const generateFrame = () => {
       edgeType: {
         top: rowIndex === 0 ? 0 : -calculateEdgeType(colIndex, rowIndex),
         right:
-          colIndex === NUMBER_COLUMNS - 1 ? 0 : calculateEdgeType(colIndex, rowIndex),
+          colIndex === cols - 1 ? 0 : calculateEdgeType(colIndex, rowIndex),
         bottom:
-          rowIndex === NUMBER_ROWS - 1 ? 0 : -calculateEdgeType(colIndex, rowIndex),
+          rowIndex === rows - 1 ? 0 : -calculateEdgeType(colIndex, rowIndex),
         left: colIndex === 0 ? 0 : calculateEdgeType(colIndex, rowIndex)
       }
     }

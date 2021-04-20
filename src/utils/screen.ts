@@ -1,4 +1,4 @@
-import { NUMBER_TILES, NUMBER_COLUMNS, NUMBER_ROWS, WIDTH_FRAMES, HEIGHT_FRAMES, WIDTH_TILE } from "../types/constants"
+import { WIDTH_FRAMES, HEIGHT_FRAMES, WIDTH_TILE } from "../types/constants"
 import { Frame, PieceType } from "../types/types"
 import { calculateEdgeType } from "./frames"
 
@@ -32,12 +32,13 @@ const randomCoordinateAvoidFrames = (i: number) => {
 }
 
 
-export const generateShapes = () => {
+export const generateShapes = (cols: number, rows: number) => {
+  const tiles = cols * rows
 
-  return [...Array(NUMBER_TILES)].map((_, i) => {
+  return [...Array(tiles)].map((_, i) => {
 
-    const colIndex = Math.floor(i % NUMBER_COLUMNS);
-    const rowIndex = Math.floor(i / NUMBER_COLUMNS);
+    const colIndex = Math.floor(i % cols);
+    const rowIndex = Math.floor(i / rows);
     return ({
       id: i.toString() + "-piece",
       ...randomCoordinateAvoidFrames(i),
@@ -47,9 +48,9 @@ export const generateShapes = () => {
       edgeType: {
         top: rowIndex === 0 ? 0 : -calculateEdgeType(colIndex, rowIndex),
         right:
-          colIndex === NUMBER_COLUMNS - 1 ? 0 : calculateEdgeType(colIndex, rowIndex),
+          colIndex === cols - 1 ? 0 : calculateEdgeType(colIndex, rowIndex),
         bottom:
-          rowIndex === NUMBER_ROWS - 1 ? 0 : -calculateEdgeType(colIndex, rowIndex),
+          rowIndex === rows - 1 ? 0 : -calculateEdgeType(colIndex, rowIndex),
         left: colIndex === 0 ? 0 : calculateEdgeType(colIndex, rowIndex)
       }
     })

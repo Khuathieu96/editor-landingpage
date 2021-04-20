@@ -16,6 +16,8 @@ const initNewGame = () => {
     cols: 5,
     rows: 5,
     id,
+    pieces: [],
+    frames: [],
     image: { url: '', width: 0, height: 0 },
     name: 'New Game',
     status: StatusGameType.NEW,
@@ -55,13 +57,6 @@ const NewGame = observer(({}: Props) => {
     );
     const wNew = value.width / mincale;
     const hNew = value.height / mincale;
-
-    console.log('asdd', wNew, hNew, mincale);
-    console.log(
-      'asdd',
-      Math.round((wNew / window.innerWidth) * 12),
-      Math.round((hNew / window.innerHeight) * 22),
-    );
 
     setNewGame((prev) => ({
       ...prev,

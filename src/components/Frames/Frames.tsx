@@ -12,13 +12,12 @@ type FrameProps = {
 };
 
 const Frames = observer(({ frames }: FrameProps) => {
-  const gameSettingStore = useStores();
-  console.log(gameSettingStore);
-  // const [image, status] = useImage(gameSettingStore.IMAGE_URL);
+  const store = useStores();
+  const [image, status] = useImage(store.currentGame?.image.url || '');
 
   return (
     <>
-      {false &&
+      {status &&
         frames.map((frame, index) => {
           const xImage = frame.x - frames[0].x;
           const yImage = frame.y - frames[0].y;
@@ -41,7 +40,7 @@ const Frames = observer(({ frames }: FrameProps) => {
                 context.closePath();
               }}
             >
-              {/* <Image
+              <Image
                 perfectDrawEnabled={false}
                 listening={false}
                 x={-10}
@@ -56,7 +55,7 @@ const Frames = observer(({ frames }: FrameProps) => {
                 height={70}
                 image={image}
                 opacity={0.3}
-              /> */}
+              />
               <Shape
                 perfectDrawEnabled={false}
                 listening={false}
