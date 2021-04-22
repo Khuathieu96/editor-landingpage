@@ -63,14 +63,20 @@ class Game {
     this.status = status
     this.dataGrid = dataGrid
     this.pieces = generateShapes(
-      this.cols || 0,
-      this.rows || 0,
+      cols || 0,
+      rows || 0,
     )
+    console.log("generateShapes", generateFrame(
+      cols || 0,
+      rows || 0,
+      image.width || 0,
+      image.height || 0,
+    ))
     this.frames = generateFrame(
-      this.cols || 0,
-      this.rows || 0,
-      this.image.width || 0,
-      this.image.height || 0,
+      cols || 0,
+      rows || 0,
+      image.width || 0,
+      image.height || 0,
     )
 
   }
@@ -129,12 +135,17 @@ class Games {
       setCurrentGame: action,
       addNewGame: action
     })
-    this.games = games
+
+    const gamesList = localStorage.getItem('games')
+
+    this.games = gamesList ? JSON.parse(gamesList) : games
   }
 
   addNewGame({ cols, rows, id, image, name, status, dataGrid }: GameType) {
     const newTodo = new Game(cols, rows, id, image, name, status, dataGrid)
-    this.games = [...this.games, newTodo]
+    this.games.push(newTodo)
+
+    localStorage.setItem('games', JSON.stringify(this.games));
 
   }
 

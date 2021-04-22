@@ -3,16 +3,12 @@ import Board from '../Board';
 import MiniMap from '../MiniMap';
 import { PieceType, Frame, zoomState } from '../../types/types';
 import { NUMBER_COLUMNS, WIDTH_TILE, NUMBER_ROWS } from '../../types/constants';
-import { generateFrame } from '../../utils/frames';
-import { checkPuzzleAnswers, generateShapes } from '../../utils/screen';
+import { checkPuzzleAnswers } from '../../utils/screen';
 import { Setting } from '../Setting';
 import { Dialog } from '../Dialog';
 import MusicBackground from '../MusicBackground';
 import { useStores } from '../../store/useStore';
 import { observer } from 'mobx-react-lite';
-
-const framesLocalStorage = localStorage.getItem('frames');
-const piecesLocalStorage = localStorage.getItem('pieces');
 
 interface ScreenType {}
 
@@ -23,11 +19,12 @@ const Screen = observer(() => {
     // (piecesLocalStorage && JSON.parse(piecesLocalStorage)) ||
     store.currentGame?.pieces || [],
   );
+
   const [frames, setFrames] = useState<Frame[]>(
     // (framesLocalStorage && JSON.parse(framesLocalStorage)) ||
     store.currentGame?.frames || [],
   );
-  console.log('pieceđs', pieces, frames);
+
   useEffect(() => {
     if (store.currentGame?.pieces) setPieces(store.currentGame?.pieces);
     if (store.currentGame?.frames) setFrames(store.currentGame?.frames);

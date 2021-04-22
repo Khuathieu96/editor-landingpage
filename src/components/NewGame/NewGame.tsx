@@ -64,7 +64,7 @@ const NewGame = observer(({}: Props) => {
       dataGrid: {
         ...prev.dataGrid,
         x: (store.games.length * 2) % 12,
-        y: Infinity,
+        y: 0,
         w: Math.round((wNew / window.innerWidth) * 12),
         h: Math.round((hNew / window.innerHeight) * 22),
       },

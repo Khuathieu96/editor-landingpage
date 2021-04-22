@@ -1,4 +1,3 @@
-import { HEIGHT_FRAMES, WIDTH_FRAMES, WIDTH_TILE } from "../types/constants";
 import { EdgeType } from "../types/types";
 
 
@@ -6,20 +5,22 @@ const renderEdges = (
   ctx: any,
   startedPointed: { x: number, y: number },
   edgesWidth: number,
+  edgesHeight: number,
   edgesType: string,
   curvedType: number
 ) => {
   const { x, y } = startedPointed;
-  const depth = edgesWidth / 2;
+  const wDepth = edgesWidth / 2;
+  const hDepth = edgesHeight / 2;
   ctx.lineTo(x, y);
 
   switch (edgesType) {
     case "top":
       ctx.bezierCurveTo(
         x,
-        y - curvedType * depth,
+        y - curvedType * wDepth,
         x + edgesWidth,
-        y - curvedType * depth,
+        y - curvedType * wDepth,
         x + edgesWidth,
         y
       );
@@ -27,21 +28,21 @@ const renderEdges = (
       break;
     case "right":
       ctx.bezierCurveTo(
-        x + curvedType * depth,
+        x + curvedType * hDepth,
         y,
-        x + curvedType * depth,
-        y + edgesWidth,
+        x + curvedType * hDepth,
+        y + edgesHeight,
         x,
-        y + edgesWidth
+        y + edgesHeight
       );
-      ctx.lineTo(x, y + 2 * edgesWidth);
+      ctx.lineTo(x, y + 2 * edgesHeight);
       break;
     case "bottom":
       ctx.bezierCurveTo(
         x,
-        y + curvedType * depth,
+        y + curvedType * wDepth,
         x - edgesWidth,
-        y + curvedType * depth,
+        y + curvedType * wDepth,
         x - edgesWidth,
         y
       );
@@ -49,14 +50,14 @@ const renderEdges = (
       break;
     case "left":
       ctx.bezierCurveTo(
-        x - curvedType * depth,
+        x - curvedType * hDepth,
         y,
-        x - curvedType * depth,
-        y - edgesWidth,
+        x - curvedType * hDepth,
+        y - edgesHeight,
         x,
-        y - edgesWidth
+        y - edgesHeight
       );
-      ctx.lineTo(x, y - 2 * edgesWidth);
+      ctx.lineTo(x, y - 2 * edgesHeight);
       break;
 
     default:
@@ -64,32 +65,36 @@ const renderEdges = (
   }
 };
 
-export const renderTiles = (context: any, widthTile: number, startPointx: number, startPointy: number, EdgeType: EdgeType) => {
+export const renderTiles = (context: any, widthTile: number, heightTile: number, startPointx: number, startPointy: number, EdgeType: EdgeType) => {
   renderEdges(
     context,
     { x: startPointx + widthTile, y: startPointy },
     widthTile,
+    heightTile,
     "top",
     EdgeType.top
   );
   renderEdges(
     context,
-    { x: startPointx + 3 * widthTile, y: startPointy + widthTile },
+    { x: startPointx + 3 * widthTile, y: startPointy + heightTile },
     widthTile,
+    heightTile,
     "right",
     EdgeType.right
   );
   renderEdges(
     context,
-    { x: startPointx + 2 * widthTile, y: startPointy + 3 * widthTile },
+    { x: startPointx + 2 * widthTile, y: startPointy + 3 * heightTile },
     widthTile,
+    heightTile,
     "bottom",
     EdgeType.bottom
   );
   renderEdges(
     context,
-    { x: startPointx, y: startPointy + 2 * widthTile },
+    { x: startPointx, y: startPointy + 2 * heightTile },
     widthTile,
+    heightTile,
     "left",
     EdgeType.left
   );
@@ -107,9 +112,10 @@ export const calculateEdgeType = (colIndex: number, rowIndex: number) => {
 
 export const generateFrame = (cols: number, rows: number, width: number, height: number) => {
   const tiles = cols * rows
+  console.log("cols * rows", cols * rows)
   const wTile = width / cols
   const hTile = height / rows
-  
+
   return [...Array(tiles)].map((_, i) => {
 
     const colIndex = Math.floor(i % cols);
@@ -117,8 +123,8 @@ export const generateFrame = (cols: number, rows: number, width: number, height:
 
     return {
       id: i.toString() + "-frame",
-      x: (window.innerWidth - width) / 2 + wTile * Math.floor(i % cols),
-      y: (window.innerHeight - height) / 2 + hTile * Math.floor(i / cols),
+      x: (window.innerWidth - width) / 2 + wTile * colIndex,
+      y: (window.innerHeight - height) / 2 + hTile * rowIndex,
       draggable: false,
       fillColor: i % 3 === 0 ? '#84ce90' : i % 3 === 1 ? '#d5d690' : 'grey',
       isDragging: false,

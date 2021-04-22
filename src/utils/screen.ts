@@ -38,7 +38,7 @@ export const generateShapes = (cols: number, rows: number) => {
   return [...Array(tiles)].map((_, i) => {
 
     const colIndex = Math.floor(i % cols);
-    const rowIndex = Math.floor(i / rows);
+    const rowIndex = Math.floor(i / cols);
     return ({
       id: i.toString() + "-piece",
       ...randomCoordinateAvoidFrames(i),

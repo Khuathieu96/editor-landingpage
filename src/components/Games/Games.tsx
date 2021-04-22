@@ -41,11 +41,11 @@ const Games = observer(() => {
       width={1200}
       rowHeight={30}
       isBounded={true}
-      onDragStop={(layout, oldItem, newItem, _, e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('dragstop', e);
-      }}
+      // onDragStop={(layout, oldItem, newItem, _, e) => {
+      //   e.preventDefault();
+      //   e.stopPropagation();
+      //   console.log('dragstop', e);
+      // }}
       // onLayoutChange={(layout) => {
       //   console.log('layout', layout);
       // }}

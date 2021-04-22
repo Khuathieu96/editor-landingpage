@@ -30,15 +30,7 @@ const Setting = observer((props) => {
           <>
             Setting
             {/* <Row gutter={[8, 16]}>
-              <Col span={12}>
-                <Title level={5}>WIDTH_TILE</Title>
-                <InputNumber
-                  defaultValue={gameSettingStore.WIDTH_TILE}
-                  onChange={(e) => {
-                    gameSettingStore.setWidthTitle(e);
-                  }}
-                />
-              </Col>
+           
 
               <Col span={12}>
                 <Title level={5}>WIDTH_FRAMES</Title>

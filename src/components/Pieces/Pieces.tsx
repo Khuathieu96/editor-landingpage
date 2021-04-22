@@ -4,7 +4,6 @@ import { Shape, Group, Image } from 'react-konva';
 import useImage from 'use-image';
 import { useStores } from '../../store/useStore';
 // import { useStores } from '../../store/useStore';
-import { WIDTH_TILE } from '../../types/constants';
 import { PieceType } from '../../types/types';
 import { renderTiles } from '../../utils/frames';
 
@@ -23,8 +22,17 @@ const Pieces = observer(
       <>
         {status &&
           pieces.map((piece, index) => {
-            const indexCol = Math.floor(parseInt(piece.id, 10) % 20);
-            const indexRow = Math.floor(parseInt(piece.id, 10) / 20);
+            const indexCol = Math.floor(
+              parseInt(piece.id, 10) % store?.currentGame?.cols,
+            );
+            const indexRow = Math.floor(
+              parseInt(piece.id, 10) / store?.currentGame?.cols,
+            );
+
+            const wGroup =
+              store?.currentGame?.image.width / store?.currentGame?.cols;
+            const hGroup =
+              store?.currentGame?.image.height / store?.currentGame?.rows;
 
             const xImage =
               (indexCol * store?.currentGame?.image.width) /
@@ -33,24 +41,32 @@ const Pieces = observer(
               (indexRow * store?.currentGame?.image.height) /
               store?.currentGame?.rows;
 
-            // const xImage = indexCol * 50;
-            // const yImage = indexRow * 50;
-            console.log('xImage', xImage);
+            const widthTile = wGroup / 3;
+            const heightTile = hGroup / 3;
+            const concaveHeightOfTile = heightTile / 2;
+            const concaveWidthOfTile = widthTile / 2;
+
             return (
               <Group
                 perfectDrawEnabled={false}
                 transformsEnabled={'position'}
                 key={piece.id}
                 x={piece.x}
-                width={xImage}
-                height={yImage}
+                width={wGroup}
+                height={hGroup}
                 y={piece.y}
                 id={piece.id}
                 clipFunc={(context: any) => {
-                  const widthTile = WIDTH_TILE / 3;
                   context.beginPath();
                   context.moveTo(0, 0);
-                  renderTiles(context, widthTile, 0, 0, piece.edgeType);
+                  renderTiles(
+                    context,
+                    widthTile,
+                    heightTile,
+                    0,
+                    0,
+                    piece.edgeType,
+                  );
                   context.closePath();
                 }}
                 draggable={true}
@@ -64,16 +80,16 @@ const Pieces = observer(
                 <Image
                   perfectDrawEnabled={false}
                   // listening={false}
-                  x={-10}
-                  y={-10}
+                  x={-concaveWidthOfTile}
+                  y={-concaveHeightOfTile}
                   crop={{
-                    x: xImage - 10,
-                    y: yImage - 10,
-                    width: 70,
-                    height: 70,
+                    x: xImage - concaveWidthOfTile,
+                    y: yImage - concaveHeightOfTile,
+                    width: wGroup + concaveWidthOfTile * 2,
+                    height: hGroup + concaveHeightOfTile * 2,
                   }}
-                  width={70}
-                  height={70}
+                  width={wGroup + concaveWidthOfTile * 2}
+                  height={hGroup + concaveHeightOfTile * 2}
                   image={image}
                 />
                 <Shape
@@ -82,10 +98,16 @@ const Pieces = observer(
                   key={piece.id}
                   id={piece.id}
                   sceneFunc={(context, shape) => {
-                    const widthTile = WIDTH_TILE / 3;
                     context.beginPath();
                     context.moveTo(0, 0);
-                    renderTiles(context, widthTile, 0, 0, piece.edgeType);
+                    renderTiles(
+                      context,
+                      widthTile,
+                      heightTile,
+                      0,
+                      0,
+                      piece.edgeType,
+                    );
 
                     context.closePath();
                     context.fillStrokeShape(shape);
