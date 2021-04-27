@@ -80,16 +80,16 @@ const Pieces = observer(
                 <Image
                   perfectDrawEnabled={false}
                   // listening={false}
-                  x={-concaveWidthOfTile}
-                  y={-concaveHeightOfTile}
+                  x={-concaveHeightOfTile}
+                  y={-concaveWidthOfTile}
                   crop={{
-                    x: xImage - concaveWidthOfTile,
-                    y: yImage - concaveHeightOfTile,
-                    width: wGroup + concaveWidthOfTile * 2,
-                    height: hGroup + concaveHeightOfTile * 2,
+                    x: xImage - concaveHeightOfTile,
+                    y: yImage - concaveWidthOfTile,
+                    width: wGroup + concaveHeightOfTile * 2,
+                    height: hGroup + concaveWidthOfTile * 2,
                   }}
-                  width={wGroup + concaveWidthOfTile * 2}
-                  height={hGroup + concaveHeightOfTile * 2}
+                  width={wGroup + concaveHeightOfTile * 2}
+                  height={hGroup + concaveWidthOfTile * 2}
                   image={image}
                 />
                 <Shape
@@ -116,33 +116,6 @@ const Pieces = observer(
                   strokeWidth={0.5}
                 />
               </Group>
-              // <Shape
-              //   key={piece.id}
-              //   id={piece.id}
-              //   fill={piece.fillColor}
-              //   draggable={true}
-              //   x={piece.x}
-              //   width={WIDTH_TILE}
-              //   height={WIDTH_TILE}
-              //   y={piece.y}
-              //   sceneFunc={(context, shape) => {
-              //     const widthTile = WIDTH_TILE / 3;
-              //     context.beginPath();
-              //     context.moveTo(0, 0);
-              //     renderTiles(context, widthTile, 0, 0, piece.edgeType);
-
-              //     context.closePath();
-              //     context.fillStrokeShape(shape);
-              //   }}
-              //   stroke='black'
-              //   strokeWidth={0.5}
-              // shadowBlur={piece.isDragging ? 10 : 0}
-              // shadowOpacity={piece.isDragging ? 0.6 : 0}
-              // shadowOffsetX={piece.isDragging ? 10 : 5}
-              // shadowOffsetY={piece.isDragging ? 10 : 5}
-              // onDragStart={handleDragStart}
-              // onDragEnd={handleDragEnd}
-              // />
             );
           })}
       </>

@@ -21,7 +21,6 @@ const routes = [{
 	layout: FullLayout,
 	title: "Home"
 }, {
-
 	component: PathNotFound,
 	path: "*",
 	layout: FullLayout,

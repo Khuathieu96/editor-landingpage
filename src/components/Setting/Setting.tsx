@@ -1,14 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
-import { Button, InputNumber, Row, Col, Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import { Dialog } from '../Dialog';
 import { observer } from 'mobx-react-lite';
-import { GameSettingContext } from '../../context/GameContext/GameContext';
-import { UploadImage } from './components';
-import { storeGamesList } from '../../store/store';
-import { StatusGameType } from '../../types/types';
-import { v4 as uuidv4 } from 'uuid';
-
 const Setting = observer((props) => {
   const [visible, setVisible] = useState(false);
   const { Title } = Typography;

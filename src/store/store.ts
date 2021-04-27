@@ -65,13 +65,10 @@ class Game {
     this.pieces = generateShapes(
       cols || 0,
       rows || 0,
-    )
-    console.log("generateShapes", generateFrame(
-      cols || 0,
-      rows || 0,
       image.width || 0,
       image.height || 0,
-    ))
+    )
+
     this.frames = generateFrame(
       cols || 0,
       rows || 0,

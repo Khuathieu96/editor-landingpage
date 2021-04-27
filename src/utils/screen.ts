@@ -1,47 +1,61 @@
-import { WIDTH_FRAMES, HEIGHT_FRAMES, WIDTH_TILE } from "../types/constants"
 import { Frame, PieceType } from "../types/types"
 import { calculateEdgeType } from "./frames"
 
-const horizontalSpace = (window.innerWidth - WIDTH_FRAMES) / 2
-const verticalSpace = (window.innerHeight - HEIGHT_FRAMES) / 2
-
-const randomCoordinateAvoidFrames = (i: number) => {
-  const randomIndex = Math.ceil(Math.random() * 4)
-  const coordinateBasic: any = {
-    1: {
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * verticalSpace - WIDTH_TILE,
-    }, // top
-
-    2: {
-      x: Math.random() * horizontalSpace + horizontalSpace + WIDTH_FRAMES,
-      y: Math.random() * window.innerHeight,
-    },//right
-    3: {
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * verticalSpace + verticalSpace + HEIGHT_FRAMES,
-    }, // bottom
-
-    4: {
-      x: Math.random() * horizontalSpace - WIDTH_TILE,
-      y: Math.random() * window.innerHeight,
-    } //left
-  }
-  return coordinateBasic[randomIndex]
-
+const randomIntFromInterval = (min: number, max: number) => { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+const randomCoordinate = (xmin: number, ymin: number, xmax: number, ymax: number, halfW: number, halfH: number, wTile: number, hTile: number, type: string) => {
+  const coordinateBasic: any = {
+    "T": {
+      x: randomIntFromInterval(xmin - halfH, xmax + halfH),
+      y: randomIntFromInterval(ymin - halfW, ymin) - hTile,
+    }, // top
 
-export const generateShapes = (cols: number, rows: number) => {
+    "R": {
+      x: randomIntFromInterval(xmax, xmax + halfH),
+      y: randomIntFromInterval(ymin - halfH, ymax + halfH),
+    }, //right
+    "B": {
+      x: randomIntFromInterval(xmin - halfH, xmax + halfH),
+      y: randomIntFromInterval(ymax, ymax + halfW),
+    }, // bottom
+    "L": {
+      x: randomIntFromInterval(xmin - halfH, xmin) - wTile,
+      y: randomIntFromInterval(ymin - halfH, ymax + halfH),
+    } //left
+  }
+  return coordinateBasic[type]
+}
+
+const funcRenderArrType = (x: number, verticalRatio: number, horizontalRatio: number) =>
+  [...Array(x)].map((_, i) => i < x * verticalRatio / 2 ? "T" : i < x * verticalRatio ? "B" : i < x * (verticalRatio + horizontalRatio / 2) ? "R" : "L")
+
+export const generateShapes = (cols: number, rows: number, width: number, height: number) => {
   const tiles = cols * rows
 
-  return [...Array(tiles)].map((_, i) => {
+  const wTile = width / cols
+  const hTile = height / rows
+  const xmin = (window.innerWidth - width) / 2
+  const ymin = (window.innerHeight - height) / 2
+  const xmax = xmin + width
+  const ymax = ymin + height
 
+  let arrType = funcRenderArrType(tiles, width / (width + height), height / (width + height))
+
+  return [...Array(tiles)].map((_, i) => {
+    const indexTypeRadom = Math.floor(Math.random() * arrType.length)
     const colIndex = Math.floor(i % cols);
     const rowIndex = Math.floor(i / cols);
+
+    const type = arrType[indexTypeRadom]
+    arrType = [...arrType.slice(0, indexTypeRadom), ...arrType.slice(indexTypeRadom + 1, arrType.length)]
+
+
     return ({
       id: i.toString() + "-piece",
-      ...randomCoordinateAvoidFrames(i),
+      // ...randomCoordinateAvoidFrames(i),
+      ...randomCoordinate(xmin, ymin, xmax, ymax, width / 2, height / 2, wTile, hTile, type),
       draggable: true,
       fillColor: i % 3 === 0 ? '#84ce90' : i % 3 === 1 ? '#d5d690' : 'grey',
       isDragging: false,

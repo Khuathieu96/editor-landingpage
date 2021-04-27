@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Howl } from 'howler';
 import { SoundOutlined, SoundFilled } from '@ant-design/icons';
 import { Button } from 'antd';

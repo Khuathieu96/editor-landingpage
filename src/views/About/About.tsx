@@ -1,8 +1,6 @@
 import React from 'react';
 
-interface Props {}
-
-const About = ({}: Props) => {
+const About = () => {
   return <>Hello, my name is Ceuli!</>;
 };
 

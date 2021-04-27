@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import Board from '../Board';
 import MiniMap from '../MiniMap';
 import { PieceType, Frame, zoomState } from '../../types/types';
-import { NUMBER_COLUMNS, WIDTH_TILE, NUMBER_ROWS } from '../../types/constants';
 import { checkPuzzleAnswers } from '../../utils/screen';
 import { Setting } from '../Setting';
 import { Dialog } from '../Dialog';
@@ -83,11 +82,15 @@ const Screen = observer(() => {
     const { x, y } = e.target.attrs;
     const { id } = e.target.attrs;
     const selectedFrames = frames.find(
-      (frame) => Math.abs(frame.x - x) < 25 && Math.abs(frame.y - y) < 25,
+      (frame) =>
+        Math.abs(frame.x - x) <
+          store.currentGame.image.width / store.currentGame.cols / 2 &&
+        Math.abs(frame.y - y) <
+          store.currentGame.image.height / store.currentGame.rows / 2,
     );
 
     const indexRowSelectedFrame = selectedFrames
-      ? Math.floor(parseInt(selectedFrames.id, 10) / NUMBER_COLUMNS) + 1
+      ? Math.floor(parseInt(selectedFrames.id, 10) / store.currentGame.cols) + 1
       : 0;
 
     if (e.target.getType() !== 'Stage') {
@@ -109,11 +112,14 @@ const Screen = observer(() => {
               y:
                 indexRowSelectedFrame < 6
                   ? selectedFrames.y -
-                    indexRowSelectedFrame * WIDTH_TILE -
-                    NUMBER_COLUMNS
+                    (indexRowSelectedFrame * store.currentGame.image.height) /
+                      store.currentGame.rows -
+                    store.currentGame.cols
                   : selectedFrames.y +
-                    (NUMBER_ROWS - indexRowSelectedFrame + 1) * WIDTH_TILE +
-                    NUMBER_COLUMNS,
+                    ((store.currentGame.rows - indexRowSelectedFrame + 1) *
+                      store.currentGame.image.height) /
+                      store.currentGame.rows +
+                    store.currentGame.cols,
               x: selectedFrames.x,
               isDragging: false,
             };
@@ -141,8 +147,10 @@ const Screen = observer(() => {
     setFrames(
       frames.map((frame) => {
         if (
-          Math.abs(frame.x - x) < 25 &&
-          Math.abs(frame.y - y) < 25 // tinh gia tri width overlap va height overlap deu phai > 25
+          Math.abs(frame.x - x) <
+            store.currentGame.image.width / store.currentGame.cols / 2 &&
+          Math.abs(frame.y - y) <
+            store.currentGame.image.height / store.currentGame.rows / 2
         ) {
           return {
             ...frame,

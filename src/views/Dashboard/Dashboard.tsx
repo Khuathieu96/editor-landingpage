@@ -2,9 +2,7 @@ import React from 'react';
 import Games from '../../components/Games/Games';
 import { NewGame } from '../../components/NewGame';
 
-interface Props {}
-
-const Dashboard = ({}: Props) => {
+const Dashboard = () => {
   return (
     <>
       <h1>List game</h1>

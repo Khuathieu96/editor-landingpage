@@ -12,52 +12,129 @@ const renderEdges = (
   const { x, y } = startedPointed;
   const wDepth = edgesWidth / 2;
   const hDepth = edgesHeight / 2;
-  ctx.lineTo(x, y);
 
   switch (edgesType) {
     case "top":
-      ctx.bezierCurveTo(
-        x,
-        y - curvedType * wDepth,
-        x + edgesWidth,
-        y - curvedType * wDepth,
-        x + edgesWidth,
-        y
-      );
-      ctx.lineTo(x + 2 * edgesWidth, y);
+      if (curvedType === 0) {
+        ctx.lineTo(x + 2 * edgesWidth,
+          y)
+      } else {
+        ctx.bezierCurveTo(
+          x - edgesWidth + edgesWidth / 4,
+          y,
+          x - edgesWidth + edgesWidth * 7 / 8,
+          y + curvedType * wDepth / 4,
+          x,
+          y
+        );
+        ctx.bezierCurveTo(
+          x - wDepth / 2,
+          y - curvedType * wDepth,
+          x + edgesWidth + wDepth / 2,
+          y - curvedType * wDepth,
+          x + edgesWidth,
+          y
+        );
+        ctx.bezierCurveTo(
+          x + edgesWidth + edgesWidth * 1 / 8,
+          y + curvedType * wDepth / 4,
+          x + edgesWidth + edgesWidth * 3 / 4,
+          y,
+          x + 2 * edgesWidth,
+          y
+        );
+      }
       break;
     case "right":
-      ctx.bezierCurveTo(
-        x + curvedType * hDepth,
-        y,
-        x + curvedType * hDepth,
-        y + edgesHeight,
-        x,
-        y + edgesHeight
-      );
-      ctx.lineTo(x, y + 2 * edgesHeight);
+      if (curvedType === 0) {
+        ctx.lineTo(x, y + 2 * edgesHeight)
+      } else {
+        ctx.bezierCurveTo(
+          x,
+          y - edgesHeight + edgesHeight / 4,
+          x - curvedType * wDepth / 4,
+          y - edgesHeight + edgesHeight * 7 / 8,
+          x,
+          y
+        );
+        ctx.bezierCurveTo(
+          x + curvedType * hDepth,
+          y - wDepth / 2,
+          x + curvedType * hDepth,
+          y + edgesHeight + wDepth / 2,
+          x,
+          y + edgesHeight
+        );
+
+        ctx.bezierCurveTo(
+          x - curvedType * wDepth / 4,
+          y + edgesHeight + edgesHeight * 1 / 8,
+          x,
+          y + edgesHeight + edgesHeight * 3 / 4,
+          x,
+          y + 2 * edgesHeight
+        );
+      }
       break;
     case "bottom":
-      ctx.bezierCurveTo(
-        x,
-        y + curvedType * wDepth,
-        x - edgesWidth,
-        y + curvedType * wDepth,
-        x - edgesWidth,
-        y
-      );
-      ctx.lineTo(x - 2 * edgesWidth, y);
+      if (curvedType === 0) {
+        ctx.lineTo(x - 2 * edgesWidth, y)
+      } else {
+        ctx.bezierCurveTo(
+          x + edgesWidth - edgesWidth / 4,
+          y,
+          x + edgesWidth - edgesWidth * 7 / 8,
+          y - curvedType * wDepth / 4,
+          x,
+          y
+        );
+        ctx.bezierCurveTo(
+          x + wDepth / 2,
+          y + curvedType * wDepth,
+          x - edgesWidth - wDepth / 2,
+          y + curvedType * wDepth,
+          x - edgesWidth,
+          y
+        );
+        ctx.bezierCurveTo(
+          x - edgesWidth - edgesWidth * 1 / 8,
+          y - curvedType * wDepth / 4,
+          x - edgesWidth - edgesWidth * 3 / 4,
+          y,
+          x - 2 * edgesWidth,
+          y
+        );
+      }
       break;
     case "left":
-      ctx.bezierCurveTo(
-        x - curvedType * hDepth,
-        y,
-        x - curvedType * hDepth,
-        y - edgesHeight,
-        x,
-        y - edgesHeight
-      );
-      ctx.lineTo(x, y - 2 * edgesHeight);
+      if (curvedType === 0) {
+        ctx.lineTo(x, y - 2 * edgesHeight)
+      } else {
+        ctx.bezierCurveTo(
+          x,
+          y + edgesHeight - edgesHeight / 4,
+          x + curvedType * wDepth / 4,
+          y + edgesHeight - edgesHeight * 7 / 8,
+          x,
+          y
+        );
+        ctx.bezierCurveTo(
+          x - curvedType * hDepth,
+          y + wDepth / 2,
+          x - curvedType * hDepth,
+          y - edgesHeight - wDepth / 2,
+          x,
+          y - edgesHeight
+        );
+        ctx.bezierCurveTo(
+          x + curvedType * wDepth / 4,
+          y - edgesHeight - edgesHeight * 1 / 8,
+          x,
+          y - edgesHeight - edgesHeight * 3 / 4,
+          x,
+          y - 2 * edgesHeight
+        );
+      }
       break;
 
     default:
@@ -112,7 +189,6 @@ export const calculateEdgeType = (colIndex: number, rowIndex: number) => {
 
 export const generateFrame = (cols: number, rows: number, width: number, height: number) => {
   const tiles = cols * rows
-  console.log("cols * rows", cols * rows)
   const wTile = width / cols
   const hTile = height / rows
 

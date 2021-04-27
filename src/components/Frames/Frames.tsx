@@ -59,16 +59,16 @@ const Frames = observer(({ frames }: FrameProps) => {
               <Image
                 perfectDrawEnabled={false}
                 listening={false}
-                x={-concaveWidthOfTile}
-                y={-concaveHeightOfTile}
+                x={-concaveHeightOfTile}
+                y={-concaveWidthOfTile}
                 crop={{
-                  x: xImage - concaveWidthOfTile,
-                  y: yImage - concaveHeightOfTile,
-                  width: wGroup + concaveWidthOfTile * 2,
-                  height: hGroup + concaveHeightOfTile * 2,
+                  x: xImage - concaveHeightOfTile,
+                  y: yImage - concaveWidthOfTile,
+                  width: wGroup + concaveHeightOfTile * 2,
+                  height: hGroup + concaveWidthOfTile * 2,
                 }}
-                width={wGroup + concaveWidthOfTile * 2}
-                height={hGroup + concaveHeightOfTile * 2}
+                width={wGroup + concaveHeightOfTile * 2}
+                height={hGroup + concaveWidthOfTile * 2}
                 image={image}
                 opacity={0.3}
               />
