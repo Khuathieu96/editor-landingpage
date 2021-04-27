@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './styles.css';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../store/useStore';
 import { useHistory } from 'react-router';
+import { Button } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const ReactGridLayout = WidthProvider(RGL);
 
-const GenerateDOM = ({ game }: any) => {
+const GenerateDOM = observer(({ game }: any) => {
   let history = useHistory();
+  const [hover, setHover] = useState(false);
+  const store = useStores();
   return (
     <div
       style={{
@@ -20,16 +24,30 @@ const GenerateDOM = ({ game }: any) => {
         width: '100%',
         cursor: 'pointer',
       }}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        history.push(`/game/${game.id}`);
-      }}
+      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => setHover(true)}
     >
       <div className='text'>{game.name}</div>
+      {hover && (
+        <Button
+          type='primary'
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            history.push(`/game/${game.id}`);
+          }}
+        >
+          Open game
+        </Button>
+      )}{' '}
+      <Button
+        type='text'
+        icon={<DeleteOutlined />}
+        onClick={() => store.remove(game.id)}
+      ></Button>
     </div>
   );
-};
+});
 
 const Games = observer(() => {
   const store = useStores();
@@ -41,36 +59,15 @@ const Games = observer(() => {
       width={1200}
       rowHeight={30}
       isBounded={true}
-      // onDragStop={(layout, oldItem, newItem, _, e) => {
-      //   e.preventDefault();
-      //   e.stopPropagation();
-      //   console.log('dragstop', e);
-      // }}
-      // onLayoutChange={(layout) => {
-      //   console.log('layout', layout);
-      // }}
+      onLayoutChange={(layout) => {
+        store.updatePositionGame(layout);
+      }}
     >
       {store.games.map((game: any, i: number) => (
         <div key={game.id} data-grid={game.dataGrid}>
           <GenerateDOM game={game} key={game.id} />{' '}
         </div>
       ))}
-
-      {/* {store.games.map((game: any, i: number) => (
-       
-          <div
-            className='text'
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('onclick');
-              // history.push(`/game/${game.id}`);
-            }}
-          >
-            {game.name}
-        
-        </div>
-      ))} */}
     </ReactGridLayout>
   );
 });

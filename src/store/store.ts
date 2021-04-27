@@ -130,7 +130,8 @@ class Games {
       finishedGamesList: computed,
       unfinishedGamesList: computed,
       setCurrentGame: action,
-      addNewGame: action
+      addNewGame: action,
+      updatePositionGame: action
     })
 
     const gamesList = localStorage.getItem('games')
@@ -141,17 +142,20 @@ class Games {
   addNewGame({ cols, rows, id, image, name, status, dataGrid }: GameType) {
     const newTodo = new Game(cols, rows, id, image, name, status, dataGrid)
     this.games.push(newTodo)
-
     localStorage.setItem('games', JSON.stringify(this.games));
-
   }
+
+  updatePositionGame(dataGrid: DataGridType[]) {
+    this.games = this.games.map(game => ({ ...game, dataGrid: { ...game.dataGrid, ...dataGrid.find(grid => grid.i === game.id) } }))
+  }
+
 
   remove(id: string) {
     this.games = this.games.filter(game => game.id !== id)
+    this.currentGame = initialGame
+    localStorage.setItem('games', JSON.stringify(this.games));
   }
 }
-// 
-// const newGame = new Game(1, 1, "id", "url", "name", StatusGameType.UNFINISHED, { x: 1, y: 1, h: 1, w: 1, i: "id" })
 
 const storeGamesList = new Games([]);
 
