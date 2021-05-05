@@ -1,6 +1,6 @@
 import { Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RcFile } from 'antd/lib/upload';
 import { ImageType } from '../../../../types/types';
 
@@ -11,6 +11,9 @@ interface Props {
 
 const UploadImage = ({ imageDefault, handleOnChange }: Props) => {
   const [imageUrl, setImageUrl] = useState<string | undefined>(imageDefault);
+  useEffect(() => {
+    setImageUrl(imageDefault);
+  }, [imageDefault]);
 
   function resizeBase64Img(
     objectUrl: any,

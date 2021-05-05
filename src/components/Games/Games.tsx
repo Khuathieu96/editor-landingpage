@@ -4,12 +4,17 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../store/useStore';
 import { useHistory } from 'react-router';
-import { Button } from 'antd';
+import { Button, Input } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { Game, storeGamesList } from '../../store/store';
 
 const ReactGridLayout = WidthProvider(RGL);
 
-const GenerateDOM = observer(({ game }: any) => {
+interface GenerateDOMType {
+  game: Game;
+}
+
+const GenerateDOM = observer(({ game }: GenerateDOMType) => {
   let history = useHistory();
   const [hover, setHover] = useState(false);
   const store = useStores();
@@ -51,7 +56,6 @@ const GenerateDOM = observer(({ game }: any) => {
 
 const Games = observer(() => {
   const store = useStores();
-
   return (
     <ReactGridLayout
       className='layout'
@@ -63,7 +67,7 @@ const Games = observer(() => {
         store.updatePositionGame(layout);
       }}
     >
-      {store.games.map((game: any, i: number) => (
+      {store.games.map((game) => (
         <div key={game.id} data-grid={game.dataGrid}>
           <GenerateDOM game={game} key={game.id} />{' '}
         </div>

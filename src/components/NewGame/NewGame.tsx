@@ -1,14 +1,17 @@
 import { observer } from 'mobx-react-lite';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import debounce from 'lodash/debounce';
 import { useStores } from '../../store/useStore';
 import { Dialog } from '../Dialog';
 import { ImageType, StatusGameType } from '../../types/types';
 import { v4 as uuidv4 } from 'uuid';
-import { Col, Input, InputNumber, Row, Typography } from 'antd';
+import { Card, Col, Input, InputNumber, Row, Typography } from 'antd';
 import { UploadImage } from '../Setting/components';
-import { GameType } from '../../store/store';
+import { createApi } from 'unsplash-js';
 
-interface Props {}
+const unsplash = createApi({
+  accessKey: 'oG9Bop0QS4kK1kmwXfq37bg8-Y0X1CqDcVcZBmmoZxk',
+});
 
 const initNewGame = () => {
   const id = uuidv4();
@@ -16,8 +19,6 @@ const initNewGame = () => {
     cols: 5,
     rows: 5,
     id,
-    pieces: [],
-    frames: [],
     image: { url: '', width: 0, height: 0 },
     name: 'New Game',
     status: StatusGameType.NEW,
@@ -25,15 +26,18 @@ const initNewGame = () => {
   };
 };
 
-const NewGame = observer(({}: Props) => {
+const NewGame = observer(() => {
   const store = useStores();
   const { Title } = Typography;
   const [visible, setVisible] = useState(false);
-  const [newGame, setNewGame] = useState<GameType>(initNewGame());
+  const [listImageSearch, setListImageSearch] = useState<any[]>([]);
+
+  const [newGame, setNewGame] = useState(initNewGame());
 
   const handleAddNewGame = () => {
+    const { cols, rows, id, image, name, status, dataGrid } = newGame;
     if (newGame.image.url) {
-      store.addNewGame(newGame);
+      store.addNewGame(cols, rows, id, image, name, status, dataGrid);
       handleClose();
     } else alert('wrong input');
   };
@@ -41,6 +45,7 @@ const NewGame = observer(({}: Props) => {
   const handleClose = () => {
     setVisible(false);
     setNewGame(initNewGame());
+    setListImageSearch([]);
   };
 
   const handleCreateNewGame = (
@@ -69,6 +74,29 @@ const NewGame = observer(({}: Props) => {
         h: Math.round((hNew / window.innerHeight) * 22),
       },
     }));
+  };
+
+  const debouncedSearch = useCallback<(value: string) => void>(
+    debounce((nextValue: string) => handleFindImage(nextValue), 400),
+    [], // will be created only once initially
+  );
+
+  const handleFindImage = (value: string) => {
+    unsplash.search
+      .getPhotos({
+        query: value,
+        page: 1,
+        perPage: 10,
+        // color: 'green',
+        orientation: 'landscape',
+      })
+      .then((result) => {
+        if (result.type === 'success') {
+          const photo = result.response;
+          setListImageSearch(result.response.results);
+          console.log('photo', photo);
+        }
+      });
   };
 
   return (
@@ -106,21 +134,49 @@ const NewGame = observer(({}: Props) => {
                 </Col>
               </Row>
               <Row gutter={[8, 16]}>
-                <Col span={12}>
-                  <Title level={5}>Name</Title>
-                  <Input
-                    value={newGame.name}
-                    onChange={(e) => {
-                      handleCreateNewGame('name', e.target.value);
-                    }}
-                  />
-                </Col>
-                <Col span={12}>
-                  <UploadImage
-                    handleOnChange={(value: ImageType) => handleImage(value)}
-                    imageDefault={newGame.image.url}
-                  />
-                </Col>
+                <Title level={5}>Name</Title>
+                <Input
+                  value={newGame.name}
+                  onChange={(e) => {
+                    handleCreateNewGame('name', e.target.value);
+                  }}
+                />
+              </Row>
+              <Row gutter={[8, 16]}>
+                <Title level={5}>Image</Title>
+
+                <Input
+                  title='Search image at unsplash'
+                  onChange={(e) => {
+                    debouncedSearch(e.target.value);
+                  }}
+                />
+                <Row>
+                  {listImageSearch.length > 0 &&
+                    listImageSearch.map((item) => (
+                      // <Image width={200} src={item.urls.thumb} />
+                      <Card
+                        key={item.id}
+                        hoverable
+                        style={{ width: 240 }}
+                        onClick={() => {
+                          handleImage({
+                            url: item.urls.thumb,
+                            width: item.width,
+                            height: item.height,
+                          });
+                        }}
+                        cover={<img alt='example' src={item.urls.thumb} />}
+                      >
+                        {/* <Meta title="Europe Street beat" description="www.instagram.com" /> */}
+                      </Card>
+                    ))}
+                </Row>
+                <Title>Or</Title>
+                <UploadImage
+                  handleOnChange={(value: ImageType) => handleImage(value)}
+                  imageDefault={newGame.image.url}
+                />
               </Row>
             </>
           }

@@ -4,19 +4,6 @@ import { generateFrame } from "../utils/frames"
 import { generateShapes } from "../utils/screen"
 
 
-export type GameType = {
-  cols: number
-  rows: number
-  image: ImageType
-  name: string
-  id: string
-  pieces: any[]
-  frames: any[]
-  status: StatusGameType
-  dataGrid: DataGridType
-}
-
-
 type DataGridType = {
   x: number
   y: number
@@ -30,7 +17,7 @@ type DataGridType = {
   static?: boolean
 }
 
-class Game {
+export class Game {
   cols: number = 0
   rows: number = 0
   name: string = ''
@@ -50,7 +37,7 @@ class Game {
       dataGrid: observable,
       pieces: observable,
       frames: observable,
-      // setUrl: action,
+      updateName: action,
       // setCols: action,
       // setRows: action,
       // setStatus: action,
@@ -78,6 +65,10 @@ class Game {
 
   }
 
+  updateName = action(() => {
+    this.name = "updateName"
+  })
+
   // setUrl(value: string) {
   //   this.url = value
   // }
@@ -92,21 +83,13 @@ class Game {
   // }
 }
 
-const initialGame = {
-  cols: 0,
-  rows: 0,
-  name: '',
-  image: { url: '', width: 0, height: 0, },
-  id: '',
-  pieces: [],
-  frames: [],
-  dataGrid: { x: 0, y: 0, w: 1, h: 1, i: '' },
-  status: StatusGameType.NEW,
-}
+
+const initialGame = new Game(0, 0, '', { url: '', width: 0, height: 0, }, "", StatusGameType.NEW, { x: 0, y: 0, w: 1, h: 1, i: '' })
+
 
 class Games {
-  games: GameType[] = []
-  currentGame: GameType = initialGame
+  games: Game[] = []
+  currentGame: Game = initialGame
 
   get newGamesList() {
     return this.games.filter(game => game.status === StatusGameType.NEW)
@@ -123,7 +106,7 @@ class Games {
     return this.games.filter(game => game.status === StatusGameType.UNFINISHED)
   }
 
-  constructor(games: GameType[]) {
+  constructor(games: Game[]) {
     makeObservable(this, {
       games: observable,
       newGamesList: computed,
@@ -137,11 +120,14 @@ class Games {
     const gamesList = localStorage.getItem('games')
 
     this.games = gamesList ? JSON.parse(gamesList) : games
+
+    // this.games = games
   }
 
-  addNewGame({ cols, rows, id, image, name, status, dataGrid }: GameType) {
+  addNewGame = (cols: number, rows: number, id: string, image: ImageType, name: string, status: StatusGameType, dataGrid: DataGridType) => {
     const newTodo = new Game(cols, rows, id, image, name, status, dataGrid)
     this.games.push(newTodo)
+    console.log("this.games", this.games[0].updateName, this.games[1]?.updateName, this.games[2]?.updateName)
     localStorage.setItem('games', JSON.stringify(this.games));
   }
 
